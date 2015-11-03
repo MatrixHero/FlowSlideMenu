@@ -3,3 +3,6 @@
 
 ![Showcase](effect.gif)
 
+#Hard Working 
+
+Have some problem which will be fixed soon.
