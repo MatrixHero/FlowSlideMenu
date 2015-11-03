@@ -1,2 +1,5 @@
-# FlowSlideMenu
-A SlideMenuViewController is written in swift
+# FlowingDrawer-SWIFT
+# A FlowingDrawer like this
+
+![Showcase](effect.gif)
+

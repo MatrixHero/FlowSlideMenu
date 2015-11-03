@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9059" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <scenes>
+        <!--LeftVC-->
+        <scene sceneID="or7-eV-0cL">
+            <objects>
+                <viewController storyboardIdentifier="leftvc" id="U2M-TD-cb0" customClass="LeftVC" customModule="FlowDrawer_Swift" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="NpM-73-l8W"/>
+                        <viewControllerLayoutGuide type="bottom" id="EUX-by-aB5"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="fDs-aa-yKx">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="test" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PVa-eU-v97">
+                                <rect key="frame" x="212" y="202" width="30" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="0.2084161598" blue="0.15835994019999999" alpha="0.0" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="PVa-eU-v97" secondAttribute="trailing" id="9MS-w8-3dg"/>
+                            <constraint firstItem="EUX-by-aB5" firstAttribute="top" secondItem="PVa-eU-v97" secondAttribute="bottom" id="Dz7-4Y-eKV"/>
+                            <constraint firstItem="PVa-eU-v97" firstAttribute="leading" secondItem="fDs-aa-yKx" secondAttribute="leadingMargin" id="WGQ-Yj-KwR"/>
+                            <constraint firstItem="PVa-eU-v97" firstAttribute="top" secondItem="NpM-73-l8W" secondAttribute="bottom" id="atJ-Yg-MKl"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qJd-qq-9aa" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="741" y="-578"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <viewController storyboardIdentifier="mainvc" id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="SLIDE TO  RIGHT" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DF1-lP-yiZ">
+                                <rect key="frame" x="142" y="289" width="132" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="DF1-lP-yiZ" secondAttribute="trailing" id="EA9-P1-zhY"/>
+                            <constraint firstItem="DF1-lP-yiZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="212" id="Sjh-oh-5Uk"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="DF1-lP-yiZ" secondAttribute="bottom" constant="290" id="V4c-RG-j45"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="DF1-lP-yiZ" secondAttribute="bottom" id="Wc9-xB-bEK"/>
+                            <constraint firstItem="DF1-lP-yiZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="aZe-Ed-2fD"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="DF1-lP-yiZ" secondAttribute="trailing" constant="306" id="bTy-ux-Obc"/>
+                            <constraint firstItem="DF1-lP-yiZ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="dTG-Xs-toU"/>
+                            <constraint firstItem="DF1-lP-yiZ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="269" id="qfe-u7-JjJ"/>
+                        </constraints>
+                    </view>
+                </viewController>
+            </objects>
+        </scene>
+    </scenes>
+</document>
