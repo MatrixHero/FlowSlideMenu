@@ -37,3 +37,6 @@ func application(application: UIApplication, didFinishLaunchingWithOptions launc
     return true
 }
 ```
+## License
+
+FlowSlideMenu is available under the MIT license. See the LICENSE file for more info.
