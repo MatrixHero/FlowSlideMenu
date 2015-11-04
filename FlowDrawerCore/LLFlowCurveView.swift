@@ -50,9 +50,6 @@ public class LLFlowCurveView : UIView
     var revealPoint : CGPoint = CGPoint.zero;
     
     var status : Status = .FINISH;
-    
-    var ani_reveal : CABasicAnimation  = CABasicAnimation()
-    var ani_open : CABasicAnimation  = CABasicAnimation()
     // MARK: -
     // MARK: lifecycle
     
@@ -309,14 +306,15 @@ public class LLFlowCurveView : UIView
         
         self.status = .OPEN_ALL
         
-        self.ani_reveal = getAnimationWithTo(Float(self.getWidth()/2
+        let ani_reveal : CABasicAnimation = getAnimationWithTo(Float(self.getWidth()/2
             ),from: Float(0),duration:0.5,name: "reveal")
         
         self.revealPoint = CGPointMake(0,self.getHeight()/4)
         
-        self.ani_reveal.delegate = self
+        ani_reveal.delegate = self
         
-        self.layer.addAnimation(self.ani_reveal, forKey: "open_frist")
+        self.layer.addAnimation(ani_reveal, forKey: "openfrist")
+
     }
     
     public func open() {
@@ -324,37 +322,56 @@ public class LLFlowCurveView : UIView
         self.animating = true
         self.status = .OPEN_ANI
         
-        self.ani_open = getAnimationWithTo(Float(getTo1()),from: Float(self.revealPoint.x),duration:0.3,name: "reveal")
+        let ani_open : CABasicAnimation  = getAnimationWithTo(Float(getTo1()),from: Float(self.revealPoint.x),duration:0.3,name: "reveal")
         let ani_controlpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.controlPoint1.x)),from: Float(self.controlPoint1.x),duration:0.3,name:"control")
         let ani_startpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.startpoint.x)),from: Float(self.startpoint.x),duration:Float(0.3),name: "start")
 
         ani_open.delegate = self
         
-        self.layer.addAnimation(self.ani_open, forKey: "open")
+        self.layer.addAnimation(ani_open, forKey: "open")
         self.layer.addAnimation(ani_controlpoint, forKey: "open2")
         self.layer.addAnimation(ani_startpoint, forKey: "open3")
-        self.layer.removeAnimationForKey("open_frist")
+        self.layer.removeAnimationForKey("openfrist")
+       
     }
     
     
     public func bounce() {
         
-        
         let ani_reveal  : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(revealPoint.x),name:"reveal")
         let ani_controlpoint : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(controlPoint1.x),name:"control")
         let ani_startpoint : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(startpoint.x),name:"start")
 
-        
         ani_reveal.delegate = self
         
         self.layer.addAnimation(ani_reveal, forKey: "bounce")
         self.layer.addAnimation(ani_controlpoint, forKey: "bounce2")
         self.layer.addAnimation(ani_startpoint, forKey: "bounce3")
+        
         self.layer.removeAnimationForKey("open")
         self.layer.removeAnimationForKey("open2")
         self.layer.removeAnimationForKey("open3")
         
+        
     }
+    
+    public func finish()
+    {
+        self.status = .FINISH
+        
+        reset()
+        
+        layer.removeAllAnimations()
+        self.animating = false
+        
+        if(self.delegate != nil)
+        {
+            self.delegate?.flowViewBeginBounce(self)
+        }
+        
+    }
+    
+    
     private func getTo1(float:CGFloat) -> CGFloat
     {
         let to : CGFloat = getWidth() - float
@@ -370,9 +387,8 @@ public class LLFlowCurveView : UIView
     public override func animationDidStop(anim: CAAnimation, finished flag: Bool)
     {
 
-        if(anim ==  self.layer.animationForKey("open_frist"))
+        if(anim ==  self.layer.animationForKey("openfrist"))
         {
-            
             open()
 
         }else if(anim == self.layer.animationForKey("open"))
@@ -383,17 +399,7 @@ public class LLFlowCurveView : UIView
         }else if(anim == self.layer.animationForKey("bounce"))
         {
 
-            self.status = .FINISH
-            
-            reset()
-            
-            layer.removeAllAnimations()
-            self.animating = false
-            
-            if(self.delegate != nil)
-            {
-                self.delegate?.flowViewBeginBounce(self)
-            }
+            finish()
         }
         
         

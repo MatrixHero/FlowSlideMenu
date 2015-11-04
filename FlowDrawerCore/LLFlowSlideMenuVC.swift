@@ -296,13 +296,17 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     }
     
     public override func openLeft (){
-       self.leftContainerView.openAll()
-       openLeftWithVelocity(0.0)
+        setOpenWindowLevel()
+        leftViewController?.beginAppearanceTransition(isLeftHidden(), animated: true)
+        self.leftContainerView.openAll()
+        openLeftWithVelocity(0.0)
     }
     
     public override func closeLeft (){
+        leftViewController?.beginAppearanceTransition(isLeftHidden(), animated: true)
         self.leftContainerView.close()
         closeLeftWithVelocity(0.0)
+        setCloseWindowLebel()
     }
     
     public func openLeftWithVelocity(velocity: CGFloat) {
