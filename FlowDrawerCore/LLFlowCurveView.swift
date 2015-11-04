@@ -310,9 +310,9 @@ public class LLFlowCurveView : UIView
         
         self.status = .OPEN_ALL
         
-        self.ani_reveal = getAnimationWithTo(Float(180 - FakeCurveOptions.waveMargin),from: Float(-FakeCurveOptions.waveMargin),duration:0.5,name: "reveal")
+        self.ani_reveal = getAnimationWithTo(Float(self.getWidth()/3 - FakeCurveOptions.waveMargin),from: Float(-FakeCurveOptions.waveMargin),duration:0.3,name: "reveal")
         
-        self.revealPoint = CGPointMake(0,90)
+        self.revealPoint = CGPointMake(0,self.getHeight()/4)
         
         self.ani_reveal.delegate = self
         
@@ -324,9 +324,9 @@ public class LLFlowCurveView : UIView
         self.animating = true
         self.status = .OPEN_ANI
         
-        self.ani_open = getAnimationWithTo(Float(getTo1()),from: Float(self.revealPoint.x),duration:0.5,name: "reveal")
-        let ani_controlpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.controlPoint1.x)),from: Float(self.controlPoint1.x),duration:0.5,name:"control")
-        let ani_startpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.startpoint.x)),from: Float(self.startpoint.x),duration:Float(0.5),name: "start")
+        self.ani_open = getAnimationWithTo(Float(getTo1()),from: Float(self.revealPoint.x),duration:0.3,name: "reveal")
+        let ani_controlpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.controlPoint1.x)),from: Float(self.controlPoint1.x),duration:0.3,name:"control")
+        let ani_startpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.startpoint.x)),from: Float(self.startpoint.x),duration:Float(0.3),name: "start")
 
         ani_open.delegate = self
         
