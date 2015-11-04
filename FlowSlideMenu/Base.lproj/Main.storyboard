@@ -38,16 +38,15 @@
             </objects>
             <point key="canvasLocation" x="741" y="-578"/>
         </scene>
-        <!--View Controller-->
+        <!--MainVC-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
-                <viewController storyboardIdentifier="mainvc" id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="mainvc" id="BYZ-38-t0r" customClass="MainVC" customModule="FlowSlideMenu" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC" customClass="Main">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -57,20 +56,39 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FMN-7N-tYX">
+                                <rect key="frame" x="145" y="461" width="41" height="30"/>
+                                <state key="normal" title="OPEN"/>
+                                <connections>
+                                    <action selector="open" destination="BYZ-38-t0r" eventType="touchUpInside" id="NBs-lT-gKI"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uu6-8H-F3l">
+                                <rect key="frame" x="315" y="472" width="48" height="30"/>
+                                <state key="normal" title="CLOSE"/>
+                                <connections>
+                                    <action selector="close" destination="BYZ-38-t0r" eventType="touchUpInside" id="JYR-Ma-NIw"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="DF1-lP-yiZ" secondAttribute="trailing" id="EA9-P1-zhY"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="uu6-8H-F3l" secondAttribute="trailing" id="SIt-gb-sAP"/>
                             <constraint firstItem="DF1-lP-yiZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="212" id="Sjh-oh-5Uk"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="FMN-7N-tYX" secondAttribute="bottom" id="TlM-5N-olb"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="DF1-lP-yiZ" secondAttribute="bottom" constant="290" id="V4c-RG-j45"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="DF1-lP-yiZ" secondAttribute="bottom" id="Wc9-xB-bEK"/>
                             <constraint firstItem="DF1-lP-yiZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="aZe-Ed-2fD"/>
                             <constraint firstAttribute="trailingMargin" secondItem="DF1-lP-yiZ" secondAttribute="trailing" constant="306" id="bTy-ux-Obc"/>
                             <constraint firstItem="DF1-lP-yiZ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="dTG-Xs-toU"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="uu6-8H-F3l" secondAttribute="bottom" id="ms3-l7-7AQ"/>
                             <constraint firstItem="DF1-lP-yiZ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="269" id="qfe-u7-JjJ"/>
+                            <constraint firstItem="FMN-7N-tYX" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="t9n-uW-On5"/>
                         </constraints>
                     </view>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
         </scene>
     </scenes>

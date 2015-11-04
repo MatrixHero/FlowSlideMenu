@@ -265,6 +265,8 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     
     public func closeLeftWithVelocity(velocity: CGFloat) {
         
+        self.leftContainerView.close()
+        
         let xOrigin: CGFloat = leftContainerView.frame.origin.x
         let finalXOrigin: CGFloat = leftMinOrigin()
         
@@ -289,18 +291,18 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
                     strongSelf.enableContentInteraction()
                     strongSelf.leftViewController?.endAppearanceTransition()
                     strongSelf.leftViewController?.view.alpha=0.0
-                    if(Bool)
-                    {
-                        strongSelf.leftContainerView.status = LLFlowCurveView.Status.OPEN
-                        strongSelf.leftContainerView.reset()
-                    }
                 }
         }
     }
     
-    public func openLeft (){
-        self.leftContainerView.open()
-        openLeftWithVelocity(0.0)
+    public override func openLeft (){
+       self.leftContainerView.openAll()
+       openLeftWithVelocity(0.0)
+    }
+    
+    public override func closeLeft (){
+        self.leftContainerView.close()
+        closeLeftWithVelocity(0.0)
     }
     
     public func openLeftWithVelocity(velocity: CGFloat) {
@@ -384,11 +386,11 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
         if !isTagetViewController() {
             return
         }
-
-
+        
         switch panGesture.state {
         case UIGestureRecognizerState.Began:
             
+            self.leftContainerView.start()
             LeftPanState.frameAtStartOfPan = leftContainerView.frame
             LeftPanState.startPointOfPan = panGesture.locationInView(view)
             LeftPanState.wasOpenAtStartOfPan = isLeftOpen()
@@ -411,7 +413,6 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
                 if !LeftPanState.wasHiddenAtStartOfPan {
                     leftViewController?.beginAppearanceTransition(true, animated: true)
                 }
-                
                 openLeftWithVelocity(panInfo.velocity)
                 openCurve()
                 
@@ -452,5 +453,43 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
             self.leftViewController?.view.alpha = 1
         }
         
+    }
+}
+
+
+extension UIViewController {
+    
+    public func slideMenuController() -> LLFlowSlideMenuVC? {
+        var viewController: UIViewController? = self
+        while viewController != nil {
+            if viewController is LLFlowSlideMenuVC {
+                return viewController as? LLFlowSlideMenuVC
+            }
+            viewController = viewController?.parentViewController
+        }
+        return nil;
+    }
+    
+    public func addLeftBarButtonWithImage(buttonImage: UIImage) {
+        let leftButton: UIBarButtonItem = UIBarButtonItem(image: buttonImage, style: UIBarButtonItemStyle.Plain, target: self, action: "toggleLeft")
+        navigationItem.leftBarButtonItem = leftButton;
+    }
+    
+    public func openLeft() {
+        slideMenuController()?.openLeft()
+    }
+    
+    public func closeLeft() {
+        slideMenuController()?.closeLeft()
+    }
+    
+    // Please specify if you want menu gesuture give priority to than targetScrollView
+    public func addPriorityToMenuGesuture(targetScrollView: UIScrollView) {
+        guard let slideController = slideMenuController(), let recognizers = slideController.view.gestureRecognizers else {
+            return
+        }
+        for recognizer in recognizers where recognizer is UIPanGestureRecognizer {
+            targetScrollView.panGestureRecognizer.requireGestureRecognizerToFail(recognizer)
+        }
     }
 }
