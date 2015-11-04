@@ -308,7 +308,8 @@ public class LLFlowCurveView : UIView
         
         self.status = .OPEN_ALL
         
-        self.ani_reveal = getAnimationWithTo(Float(self.getWidth()/4),from: Float(-FakeCurveOptions.waveMargin),duration:0.5,name: "reveal")
+        self.ani_reveal = getAnimationWithTo(Float(self.getWidth()/2
+            ),from: Float(0),duration:0.5,name: "reveal")
         
         self.revealPoint = CGPointMake(0,self.getHeight()/4)
         
