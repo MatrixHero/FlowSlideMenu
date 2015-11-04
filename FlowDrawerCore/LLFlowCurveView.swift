@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import QuartzCore
 
 public protocol LLFlowCurveViewDelegate : NSObjectProtocol
 {
