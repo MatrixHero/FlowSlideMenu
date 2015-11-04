@@ -238,12 +238,13 @@ public class LLFlowCurveView : UIView
         let animation:CASpringAnimation = CASpringAnimation()
         animation.toValue = Float(to)
         animation.fromValue = Float(from)
-        animation.damping = 6
+        animation.damping = 1
         animation.stiffness = 100
-        animation.mass = 1
+        animation.mass = 5
         animation.initialVelocity = 0
         animation.fillMode = kCAFillModeForwards
         animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionDefault)
+        animation.removedOnCompletion = false
         return animation
     }
     
@@ -255,8 +256,8 @@ public class LLFlowCurveView : UIView
         animation.fromValue = Float(from)
         animation.duration = Double(duration)
         animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-//        animation.fillMode = kCAFillModeForwards
-//        animation.removedOnCompletion = false
+        animation.fillMode = kCAFillModeForwards
+        animation.removedOnCompletion = false
         return animation
     }
 
@@ -264,7 +265,6 @@ public class LLFlowCurveView : UIView
         
         self.animating = true
         self.status = LLFlowCurveView.Status.OPEN_ANI
-        
         self.ani_open = getAnimationWithTo(Float(getTo1()),from: Float(self.revealPoint.x),duration:0.3,name: "reveal")
         let ani_controlpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.controlPoint1.x)),from: Float(self.controlPoint1.x),duration:0.3,name:"control")
         let ani_startpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.startpoint.x)),from: Float(self.startpoint.x),duration:Float(0.3),name: "start")
@@ -274,32 +274,22 @@ public class LLFlowCurveView : UIView
         self.layer.addAnimation(ani_controlpoint, forKey: "open2")
         self.layer.addAnimation(ani_startpoint, forKey: "open3")
         
-        self.performSelector(Selector("bounce"), withObject: nil, afterDelay: 0.3)
+        let ani_reveal1  : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(revealPoint.x))
+        let ani_controlpoint1 : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(controlPoint1.x))
+        let ani_startpoint1 : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(startpoint.x))
+        
+        ani_reveal1.beginTime = CACurrentMediaTime() + 0.3
+        ani_controlpoint1.beginTime = CACurrentMediaTime() + 0.3
+        ani_startpoint1.beginTime = CACurrentMediaTime() + 0.3
+        
+        ani_reveal1.delegate = self
+        
+        self.layer.addAnimation(ani_reveal1, forKey: "reveal")
+        self.layer.addAnimation(ani_controlpoint1, forKey: "control")
+        self.layer.addAnimation(ani_startpoint1, forKey: "start")
+        
     }
     
-    public func bounce()
-    {
-        let ani_reveal  : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(revealPoint.x))
-        let ani_controlpoint : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(controlPoint1.x))
-        let ani_startpoint : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(startpoint.x))
-        self.layer.addAnimation(ani_reveal, forKey: "reveal")
-        self.layer.addAnimation(ani_controlpoint, forKey: "control")
-        self.layer.addAnimation(ani_startpoint, forKey: "start")
-        
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        let layer1 : LLFlowLayer = self.layer as! LLFlowLayer
-        layer1.start = getTo1()
-        layer1.reveal = getTo1()
-        layer1.control = getTo1()
-        CATransaction.commit()
-        
-        if(self.delegate != nil)
-        {
-            self.delegate!.flowViewBeginBounce(self)
-        }
-        
-    }
     
     private func getTo1(float:CGFloat) -> CGFloat
     {
@@ -315,6 +305,19 @@ public class LLFlowCurveView : UIView
 
     public override func animationDidStop(anim: CAAnimation, finished flag: Bool)
     {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        let layer1 : LLFlowLayer = self.layer as! LLFlowLayer
+        layer1.start = getTo1()
+        layer1.reveal = getTo1()
+        layer1.control = getTo1()
+        CATransaction.commit()
+        layer1.removeAllAnimations()
         
+        
+        if(self.delegate != nil)
+        {
+            self.delegate?.flowViewBeginBounce(self)
+        }
     }
 }
