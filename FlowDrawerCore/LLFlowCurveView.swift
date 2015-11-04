@@ -70,8 +70,6 @@ public class LLFlowCurveView : UIView
         )
     {
         self.revealPoint = CGPointMake(revealPoint.x - FakeCurveOptions.waveMargin, revealPoint.y)
-        
-        NSLog("revealx : %f", self.revealPoint.x)
         self.setNeedsDisplay()
     }
     
@@ -310,7 +308,7 @@ public class LLFlowCurveView : UIView
         
         self.status = .OPEN_ALL
         
-        self.ani_reveal = getAnimationWithTo(Float(self.getWidth()/3 - FakeCurveOptions.waveMargin),from: Float(-FakeCurveOptions.waveMargin),duration:0.3,name: "reveal")
+        self.ani_reveal = getAnimationWithTo(Float(self.getWidth()/4),from: Float(-FakeCurveOptions.waveMargin),duration:0.5,name: "reveal")
         
         self.revealPoint = CGPointMake(0,self.getHeight()/4)
         
