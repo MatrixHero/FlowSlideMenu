@@ -336,16 +336,17 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
                     strongSelf.leftViewController?.endAppearanceTransition()
                 }
         }
+        
+        if(self.leftContainerView.status == LLFlowCurveView.Status.OPEN)
+        {
+            self.leftContainerView.open()
+        }
     }
 
     var GlobalMainQueue: dispatch_queue_t {
         return dispatch_get_main_queue()
     }
-    
-    private func openCurve() {
-        self.leftContainerView.open()
-    }
-    
+   
     // MARK: -
     // MARK: public funs
     public func removeLeftGestures() {
@@ -394,7 +395,10 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
         switch panGesture.state {
         case UIGestureRecognizerState.Began:
             
-            self.leftContainerView.start()
+            if(self.leftContainerView.status == LLFlowCurveView.Status.CLOSE)
+            {
+                self.leftContainerView.start()
+            }
             LeftPanState.frameAtStartOfPan = leftContainerView.frame
             LeftPanState.startPointOfPan = panGesture.locationInView(view)
             LeftPanState.wasOpenAtStartOfPan = isLeftOpen()
@@ -418,7 +422,6 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
                     leftViewController?.beginAppearanceTransition(true, animated: true)
                 }
                 openLeftWithVelocity(panInfo.velocity)
-                openCurve()
                 
             } else {
                 if LeftPanState.wasHiddenAtStartOfPan {
