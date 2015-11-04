@@ -139,7 +139,7 @@ public class LLFlowCurveView : UIView
         
         path.stroke()
         path.fill()
-        NSLog("test:%f 开始点%@, 控制点1%@,控制点2%@",self.frame.size.width,NSStringFromCGPoint(self.startpoint),NSStringFromCGPoint(self.computeControlPoint(self.controlPoint1,bottom:true)),NSStringFromCGPoint(computeControlPoint(self.controlPoint1,bottom:false)))
+//        NSLog("test:%f start%@, control1%@,control2%@",self.frame.size.width,NSStringFromCGPoint(self.startpoint),NSStringFromCGPoint(self.computeControlPoint(self.controlPoint1,bottom:true)),NSStringFromCGPoint(computeControlPoint(self.controlPoint1,bottom:false)))
         
     }
 
