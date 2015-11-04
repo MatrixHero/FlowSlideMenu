@@ -299,7 +299,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     }
     
     public func openLeft (){
-        self.leftContainerView.open()
+       self.leftContainerView.openAll()
         openLeftWithVelocity(0.0)
     }
     
@@ -384,8 +384,6 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
         if !isTagetViewController() {
             return
         }
-
-
         switch panGesture.state {
         case UIGestureRecognizerState.Began:
             

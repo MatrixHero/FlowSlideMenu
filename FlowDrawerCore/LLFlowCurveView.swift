@@ -69,33 +69,34 @@ public class LLFlowCurveView : UIView
         )
     {
         self.revealPoint = CGPointMake(revealPoint.x - FakeCurveOptions.waveMargin, revealPoint.y)
+        
+        NSLog("revealx : %f", self.revealPoint.x)
         self.setNeedsDisplay()
     }
     
     public override func drawRect(rect: CGRect)
     {
-
         
         if (animating)
         {
             let layer :LLFlowLayer = self.layer.presentationLayer() as! LLFlowLayer
            
-            self.revealPoint = CGPointMake(layer.reveal, self.controlPoint2.y)
-            self.controlPoint1 = CGPointMake(layer.control, self.controlPoint1.y)
-            self.controlPoint3 =  CGPointMake(layer.control, self.controlPoint3.y)
-            self.startpoint = CGPointMake(layer.start, self.startpoint.y)
-            self.endPoint =  CGPointMake(layer.start, self.endPoint.y)
+            self.revealPoint = CGPointMake(layer.reveal, self.revealPoint.y)
+            
             if(self.status != .OPEN_ALL)
             {
                 self.controlPoint1 = CGPointMake(layer.control, self.controlPoint1.y)
                 self.controlPoint3 =  CGPointMake(layer.control, self.controlPoint3.y)
                 self.startpoint = CGPointMake(layer.start, self.startpoint.y)
                 self.endPoint =  CGPointMake(layer.start, self.endPoint.y)
+                
+                
             }else
             {
-//                computePoints()
+                
+                computePoints()
             }
-            NSLog("%f,%f,%f",layer.reveal,layer.control,layer.start)
+
         }else
         {
             computePoints()
@@ -129,7 +130,7 @@ public class LLFlowCurveView : UIView
         
         path.stroke()
         path.fill()
-//        NSLog("%@,%@,%@",NSStringFromCGPoint(self.startpoint),NSStringFromCGPoint(self.revealPoint),NSStringFromCGPoint(self.controlPoint2))
+        NSLog("%@,%@,%@",NSStringFromCGPoint(self.startpoint),NSStringFromCGPoint(self.revealPoint),NSStringFromCGPoint(self.controlPoint2))
         
     }
 
@@ -145,7 +146,7 @@ public class LLFlowCurveView : UIView
             
             let a : CGFloat =  revealPoint.x/self.controlPoint1.x
             let maxRatio :CGFloat = 0.7
-            if(a > maxRatio && status != .OPEN_ANI)
+            if(a > maxRatio && status != .OPEN_ANI )
             {
                 return CGPointMake(getMidPointX() * maxRatio, point.y)
             }
@@ -250,7 +251,6 @@ public class LLFlowCurveView : UIView
     
     private func getAnimationWithTo(to:Float,from:Float,duration:Float,name:String) ->CABasicAnimation
     {
-        
         let animation:CABasicAnimation = CABasicAnimation(keyPath: name)
         animation.toValue = Float(to)
         animation.fromValue = Float(from)
@@ -261,36 +261,60 @@ public class LLFlowCurveView : UIView
         return animation
     }
 
-    public func open() {
-        
+    public func openAll()
+    {
+        if(self.animating == true)
+        {
+            return
+        }
         self.animating = true
-        self.status = LLFlowCurveView.Status.OPEN_ANI
-        self.ani_open = getAnimationWithTo(Float(getTo1()),from: Float(self.revealPoint.x),duration:0.3,name: "reveal")
-        let ani_controlpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.controlPoint1.x)),from: Float(self.controlPoint1.x),duration:0.3,name:"control")
-        let ani_startpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.startpoint.x)),from: Float(self.startpoint.x),duration:Float(0.3),name: "start")
         
+        self.status = .OPEN_ALL
         
-        self.layer.addAnimation(self.ani_open, forKey: "open")
-        self.layer.addAnimation(ani_controlpoint, forKey: "open2")
-        self.layer.addAnimation(ani_startpoint, forKey: "open3")
+        self.ani_reveal = getAnimationWithTo(Float(180 - FakeCurveOptions.waveMargin),from: Float(-FakeCurveOptions.waveMargin),duration:10.5,name: "reveal")
         
-        let ani_reveal1  : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(revealPoint.x))
-        let ani_controlpoint1 : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(controlPoint1.x))
-        let ani_startpoint1 : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(startpoint.x))
+        self.revealPoint = CGPointMake(0,90)
         
-        ani_reveal1.beginTime = CACurrentMediaTime() + 0.3
-        ani_controlpoint1.beginTime = CACurrentMediaTime() + 0.3
-        ani_startpoint1.beginTime = CACurrentMediaTime() + 0.3
+        self.ani_reveal.delegate = self
         
-        ani_reveal1.delegate = self
-        
-        self.layer.addAnimation(ani_reveal1, forKey: "reveal")
-        self.layer.addAnimation(ani_controlpoint1, forKey: "control")
-        self.layer.addAnimation(ani_startpoint1, forKey: "start")
+        self.layer.addAnimation(self.ani_reveal, forKey: "open_frist")
         
     }
     
+    public func open() {
+        
+        self.animating = true
+        self.status = .OPEN_ANI
+        self.ani_open = getAnimationWithTo(Float(getTo1()),from: Float(self.revealPoint.x),duration:10,name: "reveal")
+        let ani_controlpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.controlPoint1.x)),from: Float(self.controlPoint1.x),duration:10,name:"control")
+        let ani_startpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.startpoint.x)),from: Float(self.startpoint.x),duration:Float(10),name: "start")
+
+        ani_open.delegate = self
+        
+//        NSLog("打开:%f,%f,%f",getTo1(self.revealPoint.x),getTo1(controlPoint1.x),getTo1(startpoint.x))
+        self.layer.addAnimation(self.ani_open, forKey: "open")
+        self.layer.addAnimation(ani_controlpoint, forKey: "open2")
+        self.layer.addAnimation(ani_startpoint, forKey: "open3")
+    }
     
+    
+    public func bounce() {
+        
+        let ani_reveal  : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(revealPoint.x))
+        let ani_controlpoint : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(controlPoint1.x))
+        let ani_startpoint : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(startpoint.x))
+        
+        ani_reveal.beginTime = CACurrentMediaTime()
+        ani_controlpoint.beginTime = CACurrentMediaTime()
+        ani_startpoint.beginTime = CACurrentMediaTime()
+        
+        ani_reveal.delegate = self
+        
+        self.layer.addAnimation(ani_reveal, forKey: "reveal")
+        self.layer.addAnimation(ani_controlpoint, forKey: "control")
+        self.layer.addAnimation(ani_startpoint, forKey: "start")
+        
+    }
     private func getTo1(float:CGFloat) -> CGFloat
     {
         let to : CGFloat = getWidth() - float
@@ -305,19 +329,35 @@ public class LLFlowCurveView : UIView
 
     public override func animationDidStop(anim: CAAnimation, finished flag: Bool)
     {
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        let layer1 : LLFlowLayer = self.layer as! LLFlowLayer
-        layer1.start = getTo1()
-        layer1.reveal = getTo1()
-        layer1.control = getTo1()
-        CATransaction.commit()
-        layer1.removeAllAnimations()
-        
-        
-        if(self.delegate != nil)
+
+        let layer : LLFlowLayer = self.layer as! LLFlowLayer
+
+        if(anim ==  layer.animationForKey("open_frist"))
         {
-            self.delegate?.flowViewBeginBounce(self)
+            open()
+        }else if(anim == layer.animationForKey("open"))
+        {
+            bounce()
+            
+        }else
+        {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            
+            layer.start = getTo1()
+            layer.reveal = getTo1()
+            layer.control = getTo1()
+            CATransaction.commit()
+//            layer.removeAllAnimations()
+            
+            self.animating = false
+            
+            if(self.delegate != nil)
+            {
+                self.delegate?.flowViewBeginBounce(self)
+            }
         }
+        
+        
     }
 }
