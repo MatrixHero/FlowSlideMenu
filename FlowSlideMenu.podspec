@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
   s.name         = "FlowSlideMenu"
   s.version      = "0.1.1"
-  s.summary      = "a light weight and easy to use tableview slide effect."
+  s.summary      = "A flowing SlideMenu is writen in swift"
 
   s.homepage     = "https://github.com/MatrixHero/FlowSlideMenu"
   s.license      = 'MIT'
