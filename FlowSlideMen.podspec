@@ -1,7 +1,7 @@
 #FlowSlideMenu.podspec
 Pod::Spec.new do |s|
   s.name         = "FlowSlideMenu"
-  s.version      = "0.1.0"
+  s.version      = "0.1.1"
   s.summary      = "a light weight and easy to use tableview slide effect."
 
   s.homepage     = "https://github.com/MatrixHero/FlowSlideMenu"
