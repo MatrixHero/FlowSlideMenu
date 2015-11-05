@@ -27,7 +27,6 @@ public class LLFlowLayer:CALayer
             self.start = l.start
             self.control = l.control
         }
-        
     }
     
     required public init?(coder aDecoder: NSCoder) {

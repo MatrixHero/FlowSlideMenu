@@ -10,22 +10,6 @@ import QuartzCore
 
 public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,LLFlowCurveViewDelegate
 {
-    
-    public struct FlowDrawerOptions {
-        public static var leftViewWidth: CGFloat = 300.0
-        public static var leftBezelWidth: CGFloat = 100.0
-        public static var contentViewScale: CGFloat = 0.96
-        public static var contentViewOpacity: CGFloat = 0.5
-        public static var shadowOpacity: CGFloat = 0.0
-        public static var shadowRadius: CGFloat = 0.0
-        public static var shadowOffset: CGSize = CGSizeMake(0,0)
-        public static var panFromBezel: Bool = true
-        public static var animationDuration: CGFloat = 0.5
-        public static var hideStatusBar: Bool = true
-        public static var pointOfNoReturnWidth: CGFloat = 150.0
-        public static var opacityViewBackgroundColor: UIColor = UIColor.blackColor()
-    }
-    
     public enum SlideAction {
         case Open
         case Close
@@ -91,7 +75,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     public override func viewWillLayoutSubviews() {
         setUpViewController(mainContainerView, targetViewController: mainViewController)
         setUpViewController(leftContainerView, targetViewController: leftViewController)
-        leftViewController?.view.alpha = 0.0
+        
     }
     
     deinit { }
@@ -290,7 +274,6 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
 //                    strongSelf.removeShadow(strongSelf.leftContainerView)
                     strongSelf.enableContentInteraction()
                     strongSelf.leftViewController?.endAppearanceTransition()
-                    strongSelf.leftViewController?.view.alpha=0.0
                 }
         }
     }
@@ -337,10 +320,8 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
                 }
         }
         
-        if(self.leftContainerView.status == LLFlowCurveView.Status.OPEN)
-        {
-            self.leftContainerView.open()
-        }
+    
+        self.leftContainerView.open()
     }
 
     var GlobalMainQueue: dispatch_queue_t {
@@ -395,10 +376,8 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
         switch panGesture.state {
         case UIGestureRecognizerState.Began:
             
-            if(self.leftContainerView.status == LLFlowCurveView.Status.CLOSE)
-            {
-                self.leftContainerView.start()
-            }
+            self.leftContainerView.start()
+
             LeftPanState.frameAtStartOfPan = leftContainerView.frame
             LeftPanState.startPointOfPan = panGesture.locationInView(view)
             LeftPanState.wasOpenAtStartOfPan = isLeftOpen()
@@ -411,7 +390,8 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
             let translation: CGPoint = panGesture.translationInView(panGesture.view!)
             leftContainerView.frame = applyLeftTranslation(translation, toFrame: LeftPanState.frameAtStartOfPan)
             leftContainerView.backgroundColor = UIColor.clearColor()
-            leftContainerView.updatePoint(CGPointMake(translation.x -  LeftPanState.startPointOfPan.x, translation.y +  LeftPanState.startPointOfPan.y), orientation: LLFlowCurveView.Orientation.Left)
+            leftContainerView.updatePoint(CGPointMake(translation.x -  LeftPanState.startPointOfPan.x, translation.y +  LeftPanState.startPointOfPan.y), orientation: Orientation.Left)
+            
         case UIGestureRecognizerState.Ended:
             
             let velocity:CGPoint = panGesture.velocityInView(panGesture.view)
@@ -453,17 +433,21 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     
     // MARK:  -
     // MARK: LLFlowCurveViewDelegate
-    public func flowViewBeginBounce(flow:LLFlowCurveView)
+    public func flowViewStartAnimation(flow:LLFlowCurveView)
     {
-        
+        leftViewController?.view.alpha = 0.0
+    }
+    
+    public func flowViewEndAnimation(flow:LLFlowCurveView)
+    {
         UIView.animateWithDuration(0.3) { () -> Void in
             self.leftViewController?.view.alpha = 1
         }
-        
     }
 }
 
-
+// MARK:  -
+// MARK: UIViewController extension
 extension UIViewController {
     
     public func slideMenuController() -> LLFlowSlideMenuVC? {
