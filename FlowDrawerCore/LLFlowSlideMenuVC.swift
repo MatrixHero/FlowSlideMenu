@@ -74,7 +74,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
   
     public override func viewWillLayoutSubviews() {
         setUpViewController(mainContainerView, targetViewController: mainViewController)
-        setUpViewController(leftContainerView, targetViewController: leftViewController)
+        setUpViewController(leftContainerView, targetViewController: leftViewController,slideview: true)
         
     }
     
@@ -100,7 +100,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
         view.insertSubview(opacityView, atIndex: 1)
         
         var leftFrame: CGRect = view.bounds
-        leftFrame.size.width = FlowDrawerOptions.leftViewWidth
+        leftFrame.size.width = FlowDrawerOptions.leftViewWidth + FlowCurveOptions.waveMargin
         leftFrame.origin.x = leftMinOrigin();
         let leftOffset: CGFloat = 0
         leftFrame.origin.y = leftFrame.origin.y + leftOffset
@@ -124,6 +124,21 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     }
     
     
+    private func setUpViewController(targetView: UIView, targetViewController: UIViewController?, slideview:Bool) {
+        if let viewController = targetViewController {
+            addChildViewController(viewController)
+            if(slideview)
+            {
+                viewController.view.frame = CGRectMake(0,0,slideViewWidth(),targetView.bounds.height)
+            }else
+            {
+                viewController.view.frame = targetView.bounds
+            }
+            targetView.addSubview(viewController.view)
+            viewController.didMoveToParentViewController(self)
+        }
+    }
+    
     private func removeViewController(viewController: UIViewController?) {
         if let _viewController = viewController {
             _viewController.willMoveToParentViewController(nil)
@@ -133,7 +148,11 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     }
     
     private func leftMinOrigin() -> CGFloat {
-        return  -FlowDrawerOptions.leftViewWidth
+        return  -FlowDrawerOptions.leftViewWidth-FlowCurveOptions.waveMargin
+    }
+    
+    private func slideViewWidth() -> CGFloat {
+        return  FlowDrawerOptions.leftViewWidth
     }
     
     private func isLeftPointContainedWithinBezelRect(point: CGPoint) -> Bool{
@@ -161,8 +180,6 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
 //            }
         }
     }
-    
-
     
     private func panLeftResultInfoForVelocity(velocity: CGPoint) -> PanInfo {
         
@@ -274,6 +291,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
 //                    strongSelf.removeShadow(strongSelf.leftContainerView)
                     strongSelf.enableContentInteraction()
                     strongSelf.leftViewController?.endAppearanceTransition()
+                    strongSelf.leftViewController?.view.alpha = 0
                 }
         }
     }
