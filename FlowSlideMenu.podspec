@@ -1,7 +1,7 @@
 #FlowSlideMenu.podspec
 Pod::Spec.new do |s|
   s.name         = "FlowSlideMenu"
-  s.version      = "0.1.3"
+  s.version      = "0.1.4"
   s.summary      = "A flowing SlideMenu is writen in swift"
 
   s.homepage     = "https://github.com/MatrixHero/FlowSlideMenu"
