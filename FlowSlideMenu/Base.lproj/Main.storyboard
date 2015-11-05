@@ -73,18 +73,20 @@
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="DF1-lP-yiZ" secondAttribute="trailing" id="EA9-P1-zhY"/>
+                            <constraint firstItem="DF1-lP-yiZ" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="Mhp-Rt-cpa"/>
                             <constraint firstAttribute="trailingMargin" secondItem="uu6-8H-F3l" secondAttribute="trailing" id="SIt-gb-sAP"/>
-                            <constraint firstItem="DF1-lP-yiZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="212" id="Sjh-oh-5Uk"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="FMN-7N-tYX" secondAttribute="bottom" id="TlM-5N-olb"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="DF1-lP-yiZ" secondAttribute="bottom" constant="290" id="V4c-RG-j45"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="DF1-lP-yiZ" secondAttribute="bottom" id="Wc9-xB-bEK"/>
-                            <constraint firstItem="DF1-lP-yiZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="aZe-Ed-2fD"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="DF1-lP-yiZ" secondAttribute="trailing" constant="306" id="bTy-ux-Obc"/>
-                            <constraint firstItem="DF1-lP-yiZ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="dTG-Xs-toU"/>
+                            <constraint firstItem="DF1-lP-yiZ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="fDK-lR-wtg"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="uu6-8H-F3l" secondAttribute="bottom" id="ms3-l7-7AQ"/>
-                            <constraint firstItem="DF1-lP-yiZ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="269" id="qfe-u7-JjJ"/>
                             <constraint firstItem="FMN-7N-tYX" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="t9n-uW-On5"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="EA9-P1-zhY"/>
+                                <exclude reference="V4c-RG-j45"/>
+                            </mask>
+                        </variation>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

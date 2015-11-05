@@ -55,7 +55,7 @@ public class LLFlowCurveView : UIView
         orientation:Orientation
         )
     {
-        self.revealPoint = CGPointMake(revealPoint.x - FlowCurveOptions.waveMargin, revealPoint.y)
+        self.revealPoint = revealPoint
         self.setNeedsDisplay()
     }
 
@@ -131,15 +131,11 @@ public class LLFlowCurveView : UIView
         }
         if(bottom)
         {
-            
             let a : CGFloat =  revealPoint.x/self.controlPoint1.x
             let maxRatio :CGFloat = 0.7
             if(a > maxRatio && status != .OPEN_ANI )
             {
                 return CGPointMake(getMidPointX() * maxRatio, point.y)
-            }
-            if(a < 0){
-                return CGPointMake(0 , point.y)
             }
             return CGPointMake(getMidPointX()*a , point.y)
         }
@@ -343,14 +339,15 @@ public class LLFlowCurveView : UIView
     
     private func finish()
     {
-        self.status = .FINISH
-        
-        reset()
-        
-        layer.removeAllAnimations()
-        self.animating = false
-        
-        notifyDelegateAnimationEnd()
+        if (self.layer.animationKeys() != nil && (self.layer.animationKeys()!.count > 0))
+        {
+            NSLog("finish")
+            layer.removeAllAnimations()
+            self.animating = false
+            reset()
+            self.status = .FINISH
+            notifyDelegateAnimationEnd()
+        }
     }
     
     
@@ -378,7 +375,7 @@ public class LLFlowCurveView : UIView
         {
             return
         }
-        
+        self.layer.removeAllAnimations()
         notifyDelegateAnimationStart()
         
         self.animating = true
@@ -406,6 +403,7 @@ public class LLFlowCurveView : UIView
             return
         }
         
+        self.layer.removeAllAnimations()
         notifyDelegateAnimationStart()
         
         self.animating = true
@@ -427,12 +425,14 @@ public class LLFlowCurveView : UIView
         if(self.status == .CLOSE)
         {
             self.status = .OPEN
+            self.frame.origin.x = self.frame.origin.x + FlowCurveOptions.waveMargin
         }
     }
     
     public func close()
     {
         self.status = .CLOSE
+        self.reset()
         self.layer.removeAllAnimations()
     }
     
@@ -440,15 +440,12 @@ public class LLFlowCurveView : UIView
     // MARK: caanimation delegate
     public override func animationDidStop(anim: CAAnimation, finished flag: Bool)
     {
-
         if(anim ==  self.layer.animationForKey("openfrist"))
         {
             self.status = .OPEN_ANI
         }else if(anim == self.layer.animationForKey("open"))
         {
-
             bounce()
-            
         }else if(anim == self.layer.animationForKey("bounce"))
         {
             finish()
