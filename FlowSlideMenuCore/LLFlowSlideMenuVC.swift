@@ -63,7 +63,6 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
 
             self.leftContainerView.hidden = false
 
-            
             if self.leftPanGesture != nil && self.leftPanGesture != nil {
                 self.removeLeftGestures()
                 self.addLeftGestures()
@@ -172,12 +171,6 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
                 leftPanGesture!.delegate = self
                 view.addGestureRecognizer(leftPanGesture!)
             }
-            
-//            if leftTapGetsture == nil {
-//                leftTapGetsture = UITapGestureRecognizer(target: self, action: "toggleLeft")
-//                leftTapGetsture!.delegate = self
-//                view.addGestureRecognizer(leftTapGetsture!)
-//            }
         }
     }
     
@@ -235,7 +228,6 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
         return newFrame
     }
     
-    
     private func setOpenWindowLevel() {
         if (FlowDrawerOptions.hideStatusBar) {
             dispatch_async(dispatch_get_main_queue(), {
@@ -288,7 +280,6 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
             }
             }) { [weak self](Bool) -> Void in
                 if let strongSelf = self {
-//                    strongSelf.removeShadow(strongSelf.leftContainerView)
                     strongSelf.enableContentInteraction()
                     strongSelf.leftViewController?.endAppearanceTransition()
                     strongSelf.leftViewController?.view.alpha = 0
@@ -363,7 +354,6 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
         leftContainerView.frame = frame
         opacityView.layer.opacity = 0.0
         mainContainerView.transform = CGAffineTransformMakeScale(1.0, 1.0)
-//        removeShadow(leftContainerView)
         enableContentInteraction()
         self.leftContainerView.animating = false
     }
@@ -403,6 +393,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
             
             leftViewController?.beginAppearanceTransition(LeftPanState.wasHiddenAtStartOfPan, animated: true)
             setOpenWindowLevel()
+            
         case UIGestureRecognizerState.Changed:
             
             let translation: CGPoint = panGesture.translationInView(panGesture.view!)
@@ -429,6 +420,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
                 setCloseWindowLebel()
                 
             }
+            
         default:
             break
         }

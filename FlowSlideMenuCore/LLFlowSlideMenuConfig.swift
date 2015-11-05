@@ -28,7 +28,7 @@ public struct FlowCurveOptions {
     public static var waveMargin : CGFloat = 100;
     public static var startRevealY : CGFloat = 100
     public static var animation_reveal:Double = 0.3
-    public static var animation_open:Double = 0.3
+    public static var animation_open:Double = 0.2
     
     public static var animation_damping:CGFloat = 100
     public static var animation_stiffness:CGFloat = 100
