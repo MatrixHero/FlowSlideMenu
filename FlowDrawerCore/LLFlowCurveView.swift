@@ -2,7 +2,7 @@
 //  LLFakeCurveView.swift
 //
 //  Created by LL on 15/11/1.
-//  Copyright © 2015年 LL. All rights reserved.
+//  Copyright © 2015 LL. All rights reserved.
 //
 
 import UIKit
@@ -10,7 +10,6 @@ import QuartzCore
 
 public class LLFlowCurveView : UIView
 {
-    
     weak public var delegate: LLFlowCurveViewDelegate?
     
     public var animating : Bool = false
@@ -267,11 +266,11 @@ public class LLFlowCurveView : UIView
         let animation:CASpringAnimation = CASpringAnimation(keyPath: name)
         animation.toValue = Float(to)
         animation.fromValue = Float(from)
-        animation.damping = 100
+        animation.damping = FlowCurveOptions.animation_damping
         animation.duration = animation.settlingDuration
-        animation.stiffness = 100
-        animation.mass = 1
-        animation.initialVelocity = 0
+        animation.stiffness = FlowCurveOptions.animation_stiffness
+        animation.mass = FlowCurveOptions.animation_mass
+        animation.initialVelocity = FlowCurveOptions.animation_initialVelocity
         animation.fillMode = kCAFillModeForwards
         animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionDefault)
         animation.removedOnCompletion = false
@@ -308,9 +307,9 @@ public class LLFlowCurveView : UIView
     
     private func bounce(delay:Double) {
         
-        let ani_reveal  : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(revealPoint.x),name:"reveal")
-        let ani_controlpoint : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(controlPoint1.x),name:"control")
-        let ani_startpoint : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(startpoint.x),name:"start")
+        let ani_reveal  : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(getTo1()),name:"reveal")
+        let ani_controlpoint : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(getTo1(self.getWidth()/2)),name:"control")
+        let ani_startpoint : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(getTo1(0)),name:"start")
         
         
         ani_reveal.beginTime = CACurrentMediaTime() + delay

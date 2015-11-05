@@ -3,7 +3,7 @@
 //  FlowSlideMenu
 //
 //  Created by LL on 15/11/5.
-//  Copyright © 2015年 LL. All rights reserved.
+//  Copyright © 2015 LL. All rights reserved.
 //
 
 import UIKit

@@ -144,10 +144,10 @@
 		6ADAE8101BE8F6DA00641C89 /* FlowDrawerCore */ = {
 			isa = PBXGroup;
 			children = (
-				6ADAE8111BE8F6DA00641C89 /* LLFlowCurveView.swift */,
 				6ADAE8121BE8F6DA00641C89 /* LLFlowLayer.swift */,
 				6ADAE8131BE8F6DA00641C89 /* LLFlowSlideMenuVC.swift */,
 				6A8662E71BEB02E100EC7AFB /* LLFlowCurveProtocol.swift */,
+				6ADAE8111BE8F6DA00641C89 /* LLFlowCurveView.swift */,
 				6A8662E91BEB061100EC7AFB /* LLFlowSlideMenuConfig.swift */,
 				6A8662EB1BEB06E200EC7AFB /* LLFlowSlideMenuEnum.swift */,
 			);
