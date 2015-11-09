@@ -147,7 +147,6 @@ public class LLFlowCurveView : UIView
                 computePoints()
             case .OPEN_ANI_ALL :
                 let layer :LLFlowLayer = self.layer.presentationLayer() as! LLFlowLayer
-                NSLog("%f", layer.reveal)
                 self.revealPoint = CGPointMake(layer.reveal, self.revealPoint.y)
                 computePoints()
             case .OPEN_ANI_TO_HALF :
@@ -294,10 +293,11 @@ public class LLFlowCurveView : UIView
     private func getControlPoint1() -> CGPoint
     {
         var x = getMidPointX() - (self.revealPoint.x/1.5)
-        let y = getMidPointY() - (getWaveWidth()/10 * self.revealPoint.x/self.getWidth()) - getWaveWidth()/20
+        var y = getMidPointY() - (getWaveWidth()/10 * self.revealPoint.x/self.getWidth()) - getWaveWidth()/20
         
         if(self.status == .OPEN_ANI_ALL)
         {
+            y = getMidPointY() - (getWaveWidth()/5 * self.revealPoint.x/self.getWidth()) - getWaveWidth()/20
             return CGPointMake(self.revealPoint.x/2, y)
         }
         if(x < getStartPoint().x)
@@ -326,10 +326,11 @@ public class LLFlowCurveView : UIView
     private func getControlPoint3() -> CGPoint
     {
         var x : CGFloat = getMidPointX() - (self.revealPoint.x/1.5)
-        let y : CGFloat = getMidPointY() + (getWaveWidth()/10 * self.revealPoint.x/self.getWidth()) + getWaveWidth()/20
+        var y : CGFloat = getMidPointY() + (getWaveWidth()/10 * self.revealPoint.x/self.getWidth()) + getWaveWidth()/20
         
         if(self.status == .OPEN_ANI_ALL)
         {
+            y = getMidPointY() + (getWaveWidth()/5 * self.revealPoint.x/self.getWidth()) + getWaveWidth()/20
             return CGPointMake(self.revealPoint.x/2, y)
         }
         
