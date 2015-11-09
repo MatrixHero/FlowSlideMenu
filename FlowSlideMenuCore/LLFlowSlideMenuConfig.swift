@@ -22,6 +22,7 @@ public struct FlowSlideMenuOptions {
     public static var pointOfNoReturnWidth: CGFloat = 150.0
     public static var opacityViewBackgroundColor: UIColor = UIColor.blackColor()
 }
+
 public struct FlowCurveOptions {
     public static var bgColor : UIColor = UIColor.whiteColor()
     public static var waveMargin : CGFloat = 100
