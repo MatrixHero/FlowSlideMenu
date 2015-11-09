@@ -11,7 +11,8 @@
 
 ![Showcase](effect.gif)
 ####Hits
-`0.1.6` more flowing and similar to the `.git` but `autoOpen` not done . 
+`0.1.6` is more smoothly for touch
+
 ####CocoaPods
 ```
 pod 'FlowSlideMenu'
