@@ -293,6 +293,18 @@ public class LLFlowCurveView : UIView
         return CGPointMake(x,y)
     }
     
+    private func getControlPoint1InOpenAllWithRevealPoint(revealPoint:CGPoint) -> CGPoint
+    {
+        let y = revealPoint.y - (getWaveWidth()/5 * revealPoint.x/self.getWidth()) - getWaveWidth()/20
+        return CGPointMake(revealPoint.x/2, y)
+    }
+    
+    private func getControlPoint3InOpenAllWithRevealPoint(revealPoint:CGPoint) -> CGPoint
+    {
+        let y = revealPoint.y + (getWaveWidth()/5 * revealPoint.x/self.getWidth()) + getWaveWidth()/20
+        return CGPointMake(revealPoint.x/2, y)
+    }
+    
     private func getControlPoint1() -> CGPoint
     {
         var x = getMidPointX() - (self.revealPoint.x/1.5)
@@ -386,6 +398,18 @@ public class LLFlowCurveView : UIView
         return to
     }
     
+    private func getAnimationToHalf() -> CGFloat
+    {
+        let to : CGFloat = getWidth()*1/2
+        return to
+    }
+    
+    private func getAnimationToHalfPoint() -> CGPoint
+    {
+        let to : CGFloat = getWidth()*1/2
+        return CGPointMake(to, FlowCurveOptions.startRevealY)
+    }
+    
     private func reset()
     {
         self.revealPoint = CGPointZero
@@ -422,11 +446,9 @@ public class LLFlowCurveView : UIView
     }
 
     // MARK: animations
-    
-
     private func openAll(delay:Double)
     {
-        let ani_reveal : CABasicAnimation = getAnimationWithTo(Float(self.getWidth()*3/4
+        let ani_reveal : CABasicAnimation = getAnimationWithTo(Float(self.getAnimationToHalf()
             ),from: Float(0),duration:Float(FlowCurveOptions.animation_reveal),name: LLFlowLayer.KEY_REVEAL)
         
         self.revealPoint = CGPointMake(0,FlowCurveOptions.startRevealY)
@@ -434,8 +456,6 @@ public class LLFlowCurveView : UIView
         ani_reveal.delegate = self
         
         ani_reveal.beginTime = CACurrentMediaTime() + delay
-        
-        self.layer.removeAllAnimations()
         
         self.layer.addAnimation(ani_reveal, forKey:ANIMATION_KEY_OPENALL)
     }
@@ -465,6 +485,32 @@ public class LLFlowCurveView : UIView
         
         self.layer.addAnimation(ani_controlpoint, forKey: ANIMATION_KEY_OPEN2BOUNCE)
         self.layer.addAnimation(ani_startpoint, forKey: ANIMATION_KEY_OPEN2BOUNCE + "1")
+    }
+    
+    private func openToBounce(delay:Double,from:CGFloat)
+    {
+        let ani_controlpoint : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(self.getControlPoint1InOpenAllWithRevealPoint(self.getAnimationToHalfPoint()).x),name:LLFlowLayer.KEY_CONTROL)
+        let ani_startpoint : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),
+            from: Float(0),
+            name: LLFlowLayer.KEY_START)
+        
+        ani_controlpoint.beginTime = CACurrentMediaTime() + delay
+        
+        ani_controlpoint.delegate = self
+        
+        self.layer.addAnimation(ani_controlpoint, forKey: ANIMATION_KEY_OPEN2BOUNCE)
+        self.layer.addAnimation(ani_startpoint, forKey: ANIMATION_KEY_OPEN2BOUNCE + "1")
+    }
+    
+    private func bounce(delay:Double,from:CGFloat) {
+        
+        let ani_reveal  : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),from:Float(from),name:LLFlowLayer.KEY_REVEAL)
+        
+        ani_reveal.delegate = self
+        
+        ani_reveal.beginTime = CACurrentMediaTime() + delay
+        
+        self.layer.addAnimation(ani_reveal, forKey: ANIMATION_KEY_BOUNCE)
     }
     
     private func bounce(delay:Double) {
@@ -522,11 +568,13 @@ public class LLFlowCurveView : UIView
         
         self.status = .OPEN_ANI_ALL
       
+        self.layer.removeAllAnimations()
+        
         openAll(0.0)
         
-        openToBounce(FlowCurveOptions.animation_reveal)
+        openToBounce(FlowCurveOptions.animation_reveal,from:self.getAnimationToHalf())
         
-        bounce(FlowCurveOptions.animation_open + FlowCurveOptions.animation_reveal)
+        bounce(FlowCurveOptions.animation_open + FlowCurveOptions.animation_reveal,from:self.getAnimationToHalf())
     }
     
     public func open() {
