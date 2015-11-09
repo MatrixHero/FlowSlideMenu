@@ -40,6 +40,8 @@ public class LLFlowCurveView : UIView
 
     var maxRate : CGFloat = 0.3
     
+    
+    let ANIMATION_KEY_OPENALL : String = "openall"
     let ANIMATION_KEY_OPEN2HALF : String = "open2half"
     let ANIMATION_KEY_OPEN2BOUNCE : String = "open2bounce"
     let ANIMATION_KEY_BOUNCE : String = "bounce"
@@ -81,7 +83,6 @@ public class LLFlowCurveView : UIView
         if(self.status == Status.OPEN_ANI_ALL)
         {
             let offset : CGFloat = self.getWidth() + self.frame.origin.x
-            print(offset)
             self.revealPoint = CGPointMake(offset, FlowCurveOptions.startRevealY)
             self.setNeedsDisplay()
 //            if(offset > self.getWidth()/2)
@@ -145,6 +146,9 @@ public class LLFlowCurveView : UIView
             case .OPEN_MANUAL :
                 computePoints()
             case .OPEN_ANI_ALL :
+                let layer :LLFlowLayer = self.layer.presentationLayer() as! LLFlowLayer
+                NSLog("%f", layer.reveal)
+                self.revealPoint = CGPointMake(layer.reveal, self.revealPoint.y)
                 computePoints()
             case .OPEN_ANI_TO_HALF :
                 let layer :LLFlowLayer = self.layer.presentationLayer() as! LLFlowLayer
@@ -253,10 +257,10 @@ public class LLFlowCurveView : UIView
         {
             x = 0
         }
-//        if(self.status == .OPEN_ANI_ALL)
-//        {
-//            return CGPointZero
-//        }
+        if(self.status == .OPEN_ANI_ALL)
+        {
+            return CGPointZero
+        }
         if(self.status == .OPEN_FINISH)
         {
             return CGPointMake(getWidth(), y)
@@ -270,10 +274,10 @@ public class LLFlowCurveView : UIView
         var x = self.getWidth() - self.revealPoint.x
         let y = self.getHeight()
         
-//        if(self.status == .OPEN_ANI_ALL)
-//        {
-//            return CGPointMake(0, self.getHeight())
-//        }
+        if(self.status == .OPEN_ANI_ALL)
+        {
+            return CGPointMake(0, self.getHeight())
+        }
         
         if(x < 0)
         {
@@ -292,6 +296,10 @@ public class LLFlowCurveView : UIView
         var x = getMidPointX() - (self.revealPoint.x/1.5)
         let y = getMidPointY() - (getWaveWidth()/10 * self.revealPoint.x/self.getWidth()) - getWaveWidth()/20
         
+        if(self.status == .OPEN_ANI_ALL)
+        {
+            return CGPointMake(self.revealPoint.x/2, y)
+        }
         if(x < getStartPoint().x)
         {
             x = getStartPoint().x
@@ -320,6 +328,11 @@ public class LLFlowCurveView : UIView
         var x : CGFloat = getMidPointX() - (self.revealPoint.x/1.5)
         let y : CGFloat = getMidPointY() + (getWaveWidth()/10 * self.revealPoint.x/self.getWidth()) + getWaveWidth()/20
         
+        if(self.status == .OPEN_ANI_ALL)
+        {
+            return CGPointMake(self.revealPoint.x/2, y)
+        }
+        
         if(x < getStartPoint().x)
         {
             x = getStartPoint().x
@@ -341,6 +354,10 @@ public class LLFlowCurveView : UIView
     //start point
     private func getMidPointX() -> CGFloat
     {
+        if(self.status == .OPEN_ANI_ALL)
+        {
+            return self.revealPoint.x
+        }
         return getWidth() - (self.revealPoint.x * 0.3)
     }
 
@@ -401,6 +418,22 @@ public class LLFlowCurveView : UIView
     }
 
     // MARK: animations
+    
+
+    private func openAll(delay:Double)
+    {
+        let ani_reveal : CABasicAnimation = getAnimationWithTo(Float(self.getWidth()*3/4
+            ),from: Float(0),duration:Float(FlowCurveOptions.animation_reveal),name: LLFlowLayer.KEY_REVEAL)
+        
+        self.revealPoint = CGPointMake(0,FlowCurveOptions.startRevealY)
+        
+        ani_reveal.delegate = self
+        
+        ani_reveal.beginTime = CACurrentMediaTime() + delay
+        
+        self.layer.addAnimation(ani_reveal, forKey:ANIMATION_KEY_OPENALL)
+    }
+    
     private func openToHalf(delay:Double)
     {
         let ani_reveal : CABasicAnimation = getAnimationWithTo(Float(self.getWidth()/2
@@ -485,7 +518,7 @@ public class LLFlowCurveView : UIView
         
         self.status = .OPEN_ANI_ALL
       
-        openToHalf(0.0)
+        openAll(0.0)
         
         openToBounce(FlowCurveOptions.animation_reveal)
         

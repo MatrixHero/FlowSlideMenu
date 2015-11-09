@@ -10,10 +10,9 @@ import UIKit
 
 class MainVC: UIViewController {
 
-    // TO DO
     @IBAction func open()
     {
-//        self.openLeft()
+        self.openLeft()
     }
     
     @IBAction func close()

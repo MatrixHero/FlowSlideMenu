@@ -25,8 +25,8 @@ public struct FlowSlideMenuOptions {
 public struct FlowCurveOptions {
     public static var bgColor : UIColor = UIColor.whiteColor()
     public static var waveMargin : CGFloat = 100
-    public static var startRevealY : CGFloat = 100
-    public static var animation_reveal:Double = 0.1
+    public static var startRevealY : CGFloat = 300
+    public static var animation_reveal:Double = 0.5
     public static var animation_open:Double = 0.1
     public static var animation_damping:CGFloat = 10
     public static var animation_stiffness:CGFloat = 100
