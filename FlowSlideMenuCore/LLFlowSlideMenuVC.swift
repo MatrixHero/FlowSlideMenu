@@ -162,7 +162,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     }
     
     private func leftMinOrigin() -> CGFloat {
-        return  -FlowSlideMenuOptions.leftViewWidth-FlowCurveOptions.waveMargin
+        return  -FlowSlideMenuOptions.leftViewWidth - FlowCurveOptions.waveMargin
     }
     
     private func slideViewWidth() -> CGFloat {
@@ -274,6 +274,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     public func closeLeftWithVelocity(velocity: CGFloat) {
         
         leftContainerView.close()
+        
         let xOrigin: CGFloat = leftContainerView.frame.origin.x
         let finalXOrigin: CGFloat = leftMinOrigin()
         
@@ -303,9 +304,9 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     
     public override func openLeft (){
         setOpenWindowLevel()
-        leftViewController?.beginAppearanceTransition(isLeftHidden(), animated: true)
+        leftViewController?.beginAppearanceTransition(isLeftHidden(), animated:false)
+        openLeftFakeAnimation()
         self.leftContainerView.openAll()
-        openLeftWithVelocity(0.0)
     }
     
     public func updatePointTimer()
@@ -314,11 +315,33 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     }
     
     public override func closeLeft (){
+
         leftViewController?.beginAppearanceTransition(isLeftHidden(), animated: true)
         closeLeftWithVelocity(0.0)
         setCloseWindowLebel()
     }
     
+    public func openLeftFakeAnimation()
+    {
+        
+        var frame = leftContainerView.frame;
+        frame.origin.x = 0;
+    
+        self.leftContainerView.frame = frame
+        self.opacityView.layer.opacity = Float(FlowSlideMenuOptions.contentViewOpacity)
+        
+        let duration: NSTimeInterval = Double(FlowSlideMenuOptions.animationDuration)
+        UIView.animateWithDuration(duration, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { [weak self]() -> Void in
+            if let strongSelf = self {
+                strongSelf.mainContainerView.transform = CGAffineTransformMakeScale(FlowSlideMenuOptions.contentViewScale, FlowSlideMenuOptions.contentViewScale)
+            }
+            }) { [weak self](Bool) -> Void in
+                if let strongSelf = self {
+                    strongSelf.disableContentInteraction()
+                    strongSelf.leftViewController?.endAppearanceTransition()
+                }
+        }
+    }
     public func openLeftWithVelocity(velocity: CGFloat) {
         let xOrigin: CGFloat = leftContainerView.frame.origin.x
         let finalXOrigin: CGFloat = 0.0
@@ -348,10 +371,19 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
         self.leftContainerView.open()
     }
 
-    var GlobalMainQueue: dispatch_queue_t {
-        return dispatch_get_main_queue()
+    private func applyLeftContentViewScale() {
+        let openedLeftRatio: CGFloat = getOpenedLeftRatio()
+        let scale: CGFloat = 1.0 - ((1.0 - FlowSlideMenuOptions.contentViewScale) * openedLeftRatio);
+        mainContainerView.transform = CGAffineTransformMakeScale(scale, scale)
     }
    
+    private func getOpenedLeftRatio() -> CGFloat {
+        
+        let width: CGFloat = leftContainerView.frame.size.width
+        let currentPosition: CGFloat = leftContainerView.frame.origin.x - leftMinOrigin()
+        return currentPosition / width
+    }
+    
     // MARK: -
     // MARK: public funs
     public func removeLeftGestures() {
@@ -399,23 +431,28 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
         switch panGesture.state {
         case UIGestureRecognizerState.Began:
             
+            
+            LeftPanState.wasHiddenAtStartOfPan = isLeftHidden()
+            LeftPanState.wasOpenAtStartOfPan = isLeftOpen()
+            
+           
             self.leftContainerView.start()
 
             LeftPanState.frameAtStartOfPan = leftContainerView.frame
             LeftPanState.startPointOfPan = panGesture.locationInView(self.view)
-            LeftPanState.wasOpenAtStartOfPan = isLeftOpen()
-            LeftPanState.wasHiddenAtStartOfPan = isLeftHidden()
             
             leftViewController?.beginAppearanceTransition(LeftPanState.wasHiddenAtStartOfPan, animated: true)
+            
             setOpenWindowLevel()
             
         case UIGestureRecognizerState.Changed:
             
+            
             let translation: CGPoint = panGesture.translationInView(panGesture.view)
             leftContainerView.updatePoint(CGPointMake(translation.x, translation.y +  LeftPanState.startPointOfPan.y), orientation: Orientation.Left)
             leftContainerView.frame = applyLeftTranslation(translation, toFrame: LeftPanState.frameAtStartOfPan)
-           
-            
+           applyLeftContentViewScale()
+
         case UIGestureRecognizerState.Ended:
             
             let velocity:CGPoint = panGesture.velocityInView(panGesture.view)
@@ -431,6 +468,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
                 if LeftPanState.wasHiddenAtStartOfPan {
                     leftViewController?.beginAppearanceTransition(false, animated: true)
                 }
+                
                 closeLeftWithVelocity(panInfo.velocity)
                 setCloseWindowLebel()
                 

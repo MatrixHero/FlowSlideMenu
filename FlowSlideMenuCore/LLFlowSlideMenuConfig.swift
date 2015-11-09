@@ -17,7 +17,7 @@ public struct FlowSlideMenuOptions {
     public static var shadowRadius: CGFloat = 0.0
     public static var shadowOffset: CGSize = CGSizeMake(0,0)
     public static var panFromBezel: Bool = true
-    public static var animationDuration: CGFloat = 5
+    public static var animationDuration: CGFloat = 0.5
     public static var hideStatusBar: Bool = true
     public static var pointOfNoReturnWidth: CGFloat = 150.0
     public static var opacityViewBackgroundColor: UIColor = UIColor.blackColor()

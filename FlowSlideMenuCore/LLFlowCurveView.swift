@@ -253,6 +253,10 @@ public class LLFlowCurveView : UIView
         {
             x = 0
         }
+//        if(self.status == .OPEN_ANI_ALL)
+//        {
+//            return CGPointZero
+//        }
         if(self.status == .OPEN_FINISH)
         {
             return CGPointMake(getWidth(), y)
@@ -265,6 +269,11 @@ public class LLFlowCurveView : UIView
     
         var x = self.getWidth() - self.revealPoint.x
         let y = self.getHeight()
+        
+//        if(self.status == .OPEN_ANI_ALL)
+//        {
+//            return CGPointMake(0, self.getHeight())
+//        }
         
         if(x < 0)
         {
@@ -471,20 +480,16 @@ public class LLFlowCurveView : UIView
         self.layer.removeAllAnimations()
         
         notifyDelegateAnimationStart()
-//        
-//        self.animating = true
-//        
-//        self.status = .OPEN_ANI_ALL
-////
-//        openToHalf(0.0)
-//
-//        openToBounce(FlowCurveOptions.animation_reveal)
-//    
-//        bounce(FlowCurveOptions.animation_reveal + FlowCurveOptions.animation_open)
+        
+        self.animating = true
         
         self.status = .OPEN_ANI_ALL
-        
       
+        openToHalf(0.0)
+        
+        openToBounce(FlowCurveOptions.animation_reveal)
+        
+        bounce(FlowCurveOptions.animation_open + FlowCurveOptions.animation_reveal)
     }
     
     public func open() {
