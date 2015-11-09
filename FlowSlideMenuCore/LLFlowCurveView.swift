@@ -96,7 +96,10 @@ public class LLFlowCurveView : UIView
     
     public override func drawRect(rect: CGRect)
     {
-        
+        if(self.status == .CLOSE)
+        {
+            return
+        }
         computePointsForStatus(self.status)
         
         let context : CGContext = UIGraphicsGetCurrentContext()!
@@ -432,6 +435,8 @@ public class LLFlowCurveView : UIView
         
         ani_reveal.beginTime = CACurrentMediaTime() + delay
         
+        self.layer.removeAllAnimations()
+        
         self.layer.addAnimation(ani_reveal, forKey:ANIMATION_KEY_OPENALL)
     }
     
@@ -510,8 +515,6 @@ public class LLFlowCurveView : UIView
         {
             return
         }
-        
-        self.layer.removeAllAnimations()
         
         notifyDelegateAnimationStart()
         
