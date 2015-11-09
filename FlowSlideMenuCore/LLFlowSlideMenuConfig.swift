@@ -8,7 +8,7 @@
 
 import UIKit
 
-public struct FlowDrawerOptions {
+public struct FlowSlideMenuOptions {
     public static var leftViewWidth: CGFloat = 200.0
     public static var leftBezelWidth: CGFloat = 100.0
     public static var contentViewScale: CGFloat = 0.96
@@ -22,18 +22,16 @@ public struct FlowDrawerOptions {
     public static var pointOfNoReturnWidth: CGFloat = 150.0
     public static var opacityViewBackgroundColor: UIColor = UIColor.blackColor()
 }
-
 public struct FlowCurveOptions {
     public static var bgColor : UIColor = UIColor.whiteColor()
-    public static var waveMargin : CGFloat = 100;
+    public static var waveMargin : CGFloat = 100
     public static var startRevealY : CGFloat = 100
-    public static var animation_reveal:Double = 0.3
-    public static var animation_open:Double = 0.2
-    
-    public static var animation_damping:CGFloat = 100
+    public static var animation_reveal:Double = 0.1
+    public static var animation_open:Double = 0.1
+    public static var animation_damping:CGFloat = 10
     public static var animation_stiffness:CGFloat = 100
     public static var animation_mass:CGFloat = 1
-    public static var animation_initialVelocity:CGFloat = 0
+    public static var animation_initialVelocity:CGFloat = 10
 }
 
 

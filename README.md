@@ -12,8 +12,7 @@
 ![Showcase](effect.gif)
 ####Hits
 
-now, There has few bugs and effect maybe a little different from the .gif but it's real amazing. so I decide to do other type animaiton more similar to the .gif.
-
+now, There has few bugs and effect maybe a little different from the `.gif` but it's real amazing. so I decide to do other type animaiton more similar to the `.gif`.
 ####CocoaPods
 ```
 pod 'FlowSlideMenu'

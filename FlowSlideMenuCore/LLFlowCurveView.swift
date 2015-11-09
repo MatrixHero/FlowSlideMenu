@@ -15,28 +15,34 @@ public class LLFlowCurveView : UIView
     public var animating : Bool = false
     
     public enum Status {
-        case OPEN
-        case OPEN_ANI
-        case OPEN_ALL
-        case FINISH
+        case OPEN_MANUAL
+        case OPEN_ANI_ALL
+        case OPEN_ANI_TO_HALF
+        case OPEN_ANI_TO_BOUNCE
+        case OPEN_BOUNCE
+        case OPEN_FINISH
         case CLOSE
     }
     
     var bgColor : UIColor = UIColor.blueColor()
     
-   
+    var startpoint : CGPoint = CGPoint.zero
+    var endPoint : CGPoint = CGPoint.zero
     
-    var startpoint : CGPoint = CGPoint.zero;
-    var endPoint : CGPoint = CGPoint.zero;
+    var controlPoint1 : CGPoint = CGPoint.zero
+    var controlPoint2 : CGPoint = CGPoint.zero
+    var controlPoint3 : CGPoint = CGPoint.zero
+    var orientation : Orientation = .Left
     
-    var controlPoint1 : CGPoint = CGPoint.zero;
-    var controlPoint2 : CGPoint = CGPoint.zero;
-    var controlPoint3 : CGPoint = CGPoint.zero;
-    var orientation : Orientation = .Left;
+    var revealPoint : CGPoint = CGPoint.zero
     
-    var revealPoint : CGPoint = CGPoint.zero;
+    var status : Status = .CLOSE
+
+    var maxRate : CGFloat = 0.3
     
-    var status : Status = .CLOSE;
+    let ANIMATION_KEY_OPEN2HALF : String = "open2half"
+    let ANIMATION_KEY_OPEN2BOUNCE : String = "open2bounce"
+    let ANIMATION_KEY_BOUNCE : String = "bounce"
     
     // MARK: -
     // MARK: lifecycle
@@ -59,30 +65,38 @@ public class LLFlowCurveView : UIView
         self.setNeedsDisplay()
     }
 
+    public func updatePointKVO(x:CGFloat,
+        orientation:Orientation
+        )
+    {
+        if(self.status == Status.OPEN_ANI_ALL)
+        {
+            self.revealPoint = CGPointMake(x, FlowCurveOptions.startRevealY)
+            self.setNeedsDisplay()
+        }
+    }
+    
+    public func updatePointTimer()
+    {
+        if(self.status == Status.OPEN_ANI_ALL)
+        {
+            let offset : CGFloat = self.getWidth() + self.frame.origin.x
+            print(offset)
+            self.revealPoint = CGPointMake(offset, FlowCurveOptions.startRevealY)
+            self.setNeedsDisplay()
+//            if(offset > self.getWidth()/2)
+//            {
+//                stopTimer()
+//                open()
+//                return
+//            }
+        }
+    }
+    
     public override func drawRect(rect: CGRect)
     {
-        if (animating){
-            let layer :LLFlowLayer = self.layer.presentationLayer() as! LLFlowLayer
-                
-            self.revealPoint = CGPointMake(layer.reveal, self.revealPoint.y)
-                
-            if(self.status == .OPEN_ANI)
-            {
-                self.controlPoint1 = CGPointMake(layer.control, self.controlPoint1.y)
-                self.controlPoint3 =  CGPointMake(layer.control, self.controlPoint3.y)
-                self.startpoint = CGPointMake(layer.start, self.startpoint.y)
-                self.endPoint =  CGPointMake(layer.start, self.endPoint.y)
-                    
-            }
-            if(self.status == .OPEN_ALL)
-            {
-                computePoints()
-            }
-        }else
-        {
-            computePoints()
-        }
         
+        computePointsForStatus(self.status)
         
         let context : CGContext = UIGraphicsGetCurrentContext()!
         
@@ -90,23 +104,22 @@ public class LLFlowCurveView : UIView
         CGContextSetLineWidth(context, 10)
         CGContextSetFillColorWithColor(context, FlowCurveOptions.bgColor.CGColor)
 
-        
         let path : UIBezierPath = UIBezierPath()
         
-        path.moveToPoint(CGPointMake(0, self.startpoint.y))
+        path.moveToPoint(CGPointZero)
         path.addLineToPoint(self.startpoint)
-       
+            
         path.moveToPoint(self.startpoint)
-        path.addCurveToPoint(self.controlPoint2, controlPoint1: self.computeControlPoint(self.controlPoint1,bottom:true), controlPoint2: self.computeControlPoint(self.controlPoint1,bottom: false))
+            
+        path.addCurveToPoint(self.controlPoint2, controlPoint1:self.controlPoint1, controlPoint2:CGPointMake(self.controlPoint2.x, self.controlPoint1.y))
         path.addLineToPoint(CGPointMake(0, self.controlPoint2.y))
-        path.addLineToPoint(CGPointMake(0, self.startpoint.y))
-        path.addLineToPoint(self.startpoint)
-        
+        path.addLineToPoint(CGPointZero)
+
         path.moveToPoint(self.controlPoint2)
-        path.addCurveToPoint(self.endPoint, controlPoint1: self.computeControlPoint(self.controlPoint3,bottom: false), controlPoint2: self.computeControlPoint(self.controlPoint3,bottom: true))
-        
+        path.addCurveToPoint(self.endPoint, controlPoint1:CGPointMake(self.controlPoint2.x, self.controlPoint3.y), controlPoint2:self.controlPoint3)
+            
         path.moveToPoint(self.endPoint)
-        path.addLineToPoint(CGPointMake(0, self.endPoint.y))
+        path.addLineToPoint(CGPointMake(0, self.getHeight()))
         path.addLineToPoint(CGPointMake(0, self.controlPoint2.y))
         path.addLineToPoint(self.controlPoint2)
         
@@ -123,29 +136,102 @@ public class LLFlowCurveView : UIView
     // MARK: private funs
     
     // MARK: compute points funs
+    
+    private func computePointsForStatus(_status:Status)
+    {
+        
+        switch(_status)
+        {
+            case .OPEN_MANUAL :
+                computePoints()
+            case .OPEN_ANI_ALL :
+                computePoints()
+            case .OPEN_ANI_TO_HALF :
+                let layer :LLFlowLayer = self.layer.presentationLayer() as! LLFlowLayer
+                self.revealPoint = CGPointMake(layer.reveal, self.revealPoint.y)
+                computePoints()
+            case .OPEN_ANI_TO_BOUNCE :
+                let layer :LLFlowLayer = self.layer.presentationLayer() as! LLFlowLayer
+                self.startpoint = CGPointMake(layer.start, self.startpoint.y)
+                self.endPoint = CGPointMake(layer.start, self.endPoint.y)
+                self.controlPoint1 = CGPointMake(layer.control, self.controlPoint1.y)
+                self.controlPoint3 = CGPointMake(layer.control, self.controlPoint3.y)
+            case .OPEN_BOUNCE :
+                let layer :LLFlowLayer = self.layer.presentationLayer() as! LLFlowLayer
+                self.controlPoint2 = CGPointMake(layer.reveal, self.controlPoint2.y)
+                self.startpoint = CGPointMake(layer.start, self.startpoint.y)
+                self.endPoint = CGPointMake(layer.start, self.endPoint.y)
+                self.controlPoint1 = CGPointMake(layer.control, self.controlPoint1.y)
+                self.controlPoint3 = CGPointMake(layer.control, self.controlPoint3.y)
+            default:
+                break
+        }
+        /*if (animating){
+            let layer :LLFlowLayer = self.layer.presentationLayer() as! LLFlowLayer
+            
+            self.revealPoint = CGPointMake(layer.reveal, self.revealPoint.y)
+            
+            if(self.status == .OPEN_ANI_TO_BOUNCE)
+            {
+                self.controlPoint1 = CGPointMake(layer.control, self.controlPoint1.y)
+                self.controlPoint3 =  CGPointMake(layer.control, self.controlPoint3.y)
+                self.startpoint = CGPointMake(layer.start, self.startpoint.y)
+                self.endPoint =  CGPointMake(layer.start, self.endPoint.y)
+                
+            }
+            if(self.status == .OPEN_ALL)
+            {
+                computePoints()
+            }
+        }else
+        {
+            computePoints()
+        }
+        */
+    }
+    /*
+
     private func computeControlPoint(point : CGPoint , bottom : Bool) -> CGPoint
     {
-        if(self.status == .FINISH)
+        if(self.status == .OPEN_FINISH)
         {
             return CGPointMake(self.getWidth(), point.y)
         }
         if(bottom)
         {
+            if(isSticky())
+            {
+                if(status == .OPEN_ANI_TO_BOUNCE)
+                {
+                    return CGPointMake(self.startpoint.x, point.y)
+                }
+                var a : CGFloat =  revealPoint.x/self.getWidth()*2
+                a = 1 - a
+                if(a < maxRate)
+                {
+                    a = maxRate
+                }
+                return CGPointMake((getMidPointX()-self.revealPoint.x*a), point.y)
+            }
             let a : CGFloat =  revealPoint.x/self.controlPoint1.x
             let maxRatio :CGFloat = 0.7
-            if(a > maxRatio && status != .OPEN_ANI )
+            if(a > maxRatio && status != .OPEN_ANI_TO_BOUNCE )
             {
                 return CGPointMake(getMidPointX() * maxRatio, point.y)
             }
             return CGPointMake(getMidPointX()*a , point.y)
         }
-        
-        return CGPointMake(self.getMidPointX(), point.y)
+        if(isSticky() && status == .OPEN_ANI_TO_BOUNCE)
+        {
+            return CGPointMake(self.controlPoint2.x, point.y)
+        }
+       return CGPointMake(self.getMidPointX(), point.y)
     }
+    */
     
     private func getWaveWidth() -> CGFloat
     {
-        return getHeight() * 2
+        return getHeight()
     }
     
     public func getWidth() -> CGFloat
@@ -160,10 +246,18 @@ public class LLFlowCurveView : UIView
     
     private func getStartPoint() -> CGPoint
     {
+        var x :CGFloat = self.getWidth() - self.revealPoint.x
+        let y :CGFloat = 0
         
-        let x : CGFloat = 0
-        let y : CGFloat = self.getHeight()/2 - getWaveWidth()/2
-        if(self.status == .FINISH)
+        if(x < 0)
+        {
+            x = 0
+        }
+//        if(self.status == .OPEN_ANI_ALL)
+//        {
+//            return CGPointZero
+//        }
+        if(self.status == .OPEN_FINISH)
         {
             return CGPointMake(getWidth(), y)
         }
@@ -172,10 +266,21 @@ public class LLFlowCurveView : UIView
     
     private func getEndPoint() -> CGPoint
     {
-        let x : CGFloat = 0
-        let y : CGFloat = self.getHeight()/2 + getWaveWidth()/2
+    
+        var x = self.getWidth() - self.revealPoint.x
+        let y = self.getHeight()
         
-        if(self.status == .FINISH)
+//        if(self.status == .OPEN_ANI_ALL)
+//        {
+//            return CGPointMake(0, self.getHeight())
+//        }
+        
+        if(x < 0)
+        {
+            x = 0
+        }
+        
+        if(self.status == .OPEN_FINISH)
         {
             return CGPointMake(getWidth(), y)
         }
@@ -184,9 +289,14 @@ public class LLFlowCurveView : UIView
     
     private func getControlPoint1() -> CGPoint
     {
-        let x : CGFloat = getMidPointX()/2
-        let y : CGFloat = getMidPointY() - (getWaveWidth()/10 * self.revealPoint.x/self.getWidth()) - getWaveWidth()/20
-        if(self.status == .FINISH)
+        var x = getMidPointX() - (self.revealPoint.x/1.5)
+        let y = getMidPointY() - (getWaveWidth()/10 * self.revealPoint.x/self.getWidth()) - getWaveWidth()/20
+        
+        if(x < getStartPoint().x)
+        {
+            x = getStartPoint().x
+        }
+        if(self.status == .OPEN_FINISH)
         {
             return CGPointMake(getWidth(), y)
         }
@@ -197,7 +307,8 @@ public class LLFlowCurveView : UIView
     {
         let x : CGFloat = self.getMidPointX()
         let y : CGFloat = self.revealPoint.y
-        if(self.status == .FINISH)
+        
+        if(self.status == .OPEN_FINISH)
         {
             return CGPointMake(getWidth(), y)
         }
@@ -206,10 +317,15 @@ public class LLFlowCurveView : UIView
     
     private func getControlPoint3() -> CGPoint
     {
-        let x : CGFloat = getMidPointX()/2
+        var x : CGFloat = getMidPointX() - (self.revealPoint.x/1.5)
         let y : CGFloat = getMidPointY() + (getWaveWidth()/10 * self.revealPoint.x/self.getWidth()) + getWaveWidth()/20
         
-        if(self.status == .FINISH)
+        if(x < getStartPoint().x)
+        {
+            x = getStartPoint().x
+        }
+        
+        if(self.status == .OPEN_FINISH)
         {
             return CGPointMake(getWidth(), y)
         }
@@ -225,19 +341,18 @@ public class LLFlowCurveView : UIView
     //start point
     private func getMidPointX() -> CGFloat
     {
-        return getWidth()
+        return getWidth() - (self.revealPoint.x * 0.3)
     }
-    
+
     private func computePoints()
     {
-        
         self.startpoint = self.getStartPoint()
         self.endPoint = self.getEndPoint()
         self.controlPoint1 = self.getControlPoint1()
         self.controlPoint2 = self.getControlPoint2()
         self.controlPoint3 = self.getControlPoint3()
     }
-    
+
     private func getTo1(float:CGFloat) -> CGFloat
     {
         let to : CGFloat = getWidth() - float
@@ -250,7 +365,7 @@ public class LLFlowCurveView : UIView
         return to
     }
     
-    public func reset()
+    private func reset()
     {
         self.revealPoint = CGPointZero
         self.animating = false
@@ -284,68 +399,54 @@ public class LLFlowCurveView : UIView
         animation.removedOnCompletion = false
         return animation
     }
-    
-     // MARK: animations
-    private func open(delay:Double)
+
+    // MARK: animations
+    private func openToHalf(delay:Double)
     {
-        let ani_open : CABasicAnimation  = getAnimationWithTo(Float(getTo1()),from: Float(self.getWidth()/2),duration:Float(FlowCurveOptions.animation_open),name: "reveal")
-        let ani_controlpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.getWidth()/2)),from: Float(self.getWidth()/2),duration:Float(FlowCurveOptions.animation_open),name:"control")
-        let ani_startpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(0)),from: Float(0),duration:Float(FlowCurveOptions.animation_open),name: "start")
+        let ani_reveal : CABasicAnimation = getAnimationWithTo(Float(self.getWidth()/2
+            ),from: Float(0),duration:Float(FlowCurveOptions.animation_reveal),name: LLFlowLayer.KEY_REVEAL)
         
-        ani_open.beginTime = CACurrentMediaTime() + delay
+        self.revealPoint = CGPointMake(0,FlowCurveOptions.startRevealY)
+        
+        ani_reveal.delegate = self
+        
+        ani_reveal.beginTime = CACurrentMediaTime() + delay
+        
+        self.layer.addAnimation(ani_reveal, forKey: ANIMATION_KEY_OPEN2HALF)
+    }
+    
+    private func openToBounce(delay:Double)
+    {
+        let ani_controlpoint : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(self.controlPoint1.x),name:LLFlowLayer.KEY_CONTROL)
+        let ani_startpoint : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(self.startpoint.x),name: LLFlowLayer.KEY_START)
+        
         ani_controlpoint.beginTime = CACurrentMediaTime() + delay
-        ani_startpoint.beginTime = CACurrentMediaTime() + delay
         
-        self.layer.addAnimation(ani_open, forKey: "open")
-        self.layer.addAnimation(ani_controlpoint, forKey: "open2")
-        self.layer.addAnimation(ani_startpoint, forKey: "open3")
+        ani_controlpoint.delegate = self
+        
+        self.layer.addAnimation(ani_controlpoint, forKey: ANIMATION_KEY_OPEN2BOUNCE)
+        self.layer.addAnimation(ani_startpoint, forKey: ANIMATION_KEY_OPEN2BOUNCE + "1")
     }
     
     private func bounce(delay:Double) {
         
-        let ani_reveal  : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(getTo1()),name:"reveal")
-        let ani_controlpoint : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(getTo1(self.getWidth()/2)),name:"control")
-        let ani_startpoint : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(getTo1(0)),name:"start")
+        let ani_reveal  : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),from:Float(revealPoint.x),name:LLFlowLayer.KEY_REVEAL)
         
+        ani_reveal.delegate = self
         
         ani_reveal.beginTime = CACurrentMediaTime() + delay
-        ani_controlpoint.beginTime = CACurrentMediaTime() + delay
-        ani_startpoint.beginTime = CACurrentMediaTime() + delay
         
-        ani_reveal.delegate = self
-        
-        self.layer.addAnimation(ani_reveal, forKey: "bounce")
-        self.layer.addAnimation(ani_controlpoint, forKey: "bounce2")
-        self.layer.addAnimation(ani_startpoint, forKey: "bounce3")
-        
-    }
-    
-    private func bounce() {
-        
-        let ani_reveal  : CASpringAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(revealPoint.x),name:"reveal")
-        let ani_controlpoint : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(controlPoint1.x),name:"control")
-        let ani_startpoint : CABasicAnimation = getSpringAnimationWithTo(Float(getTo1()),from: Float(startpoint.x),name:"start")
-        
-        ani_reveal.delegate = self
-        
-        self.layer.addAnimation(ani_reveal, forKey: "bounce")
-        self.layer.addAnimation(ani_controlpoint, forKey: "bounce2")
-        self.layer.addAnimation(ani_startpoint, forKey: "bounce3")
-        
-        self.layer.removeAnimationForKey("open")
-        self.layer.removeAnimationForKey("open2")
-        self.layer.removeAnimationForKey("open3")
+        self.layer.addAnimation(ani_reveal, forKey: ANIMATION_KEY_BOUNCE)
     }
     
     private func finish()
     {
         if (self.layer.animationKeys() != nil && (self.layer.animationKeys()!.count > 0))
         {
-            NSLog("finish")
             layer.removeAllAnimations()
             self.animating = false
             reset()
-            self.status = .FINISH
+            self.status = .OPEN_FINISH
             notifyDelegateAnimationEnd()
         }
     }
@@ -375,80 +476,78 @@ public class LLFlowCurveView : UIView
         {
             return
         }
+        
         self.layer.removeAllAnimations()
+        
         notifyDelegateAnimationStart()
         
         self.animating = true
         
-        self.status = .OPEN_ALL
+        self.status = .OPEN_ANI_ALL
+      
+        openToHalf(0.0)
         
-        let ani_reveal : CABasicAnimation = getAnimationWithTo(Float(self.getWidth()/2
-            ),from: Float(0),duration:Float(FlowCurveOptions.animation_reveal),name: "reveal")
+        openToBounce(FlowCurveOptions.animation_reveal)
         
-        self.revealPoint = CGPointMake(0,FlowCurveOptions.startRevealY)
-        
-        ani_reveal.delegate = self
-        
-        self.layer.addAnimation(ani_reveal, forKey: "openfrist")
-
-        open(FlowCurveOptions.animation_reveal)
-    
-        bounce(FlowCurveOptions.animation_reveal + FlowCurveOptions.animation_open)
+        bounce(FlowCurveOptions.animation_open + FlowCurveOptions.animation_reveal)
     }
     
     public func open() {
     
-        if(self.status != .OPEN)
+        if(self.status != .OPEN_MANUAL)
         {
             return
         }
-        
         self.layer.removeAllAnimations()
+        
         notifyDelegateAnimationStart()
         
         self.animating = true
-        self.status = .OPEN_ANI
-    
-        let ani_open : CABasicAnimation  = getAnimationWithTo(Float(getTo1()),from: Float(self.revealPoint.x),duration:Float(FlowCurveOptions.animation_open),name: "reveal")
-        let ani_controlpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.controlPoint1.x)),from: Float(self.controlPoint1.x),duration:Float(FlowCurveOptions.animation_open),name:"control")
-        let ani_startpoint : CABasicAnimation = getAnimationWithTo(Float(getTo1(self.startpoint.x)),from: Float(self.startpoint.x),duration:Float(FlowCurveOptions.animation_open),name: "start")
-
-        ani_open.delegate = self
         
-        self.layer.addAnimation(ani_open, forKey: "open")
-        self.layer.addAnimation(ani_controlpoint, forKey: "open2")
-        self.layer.addAnimation(ani_startpoint, forKey: "open3")
+        openToBounce(0)
+        
+        bounce(FlowCurveOptions.animation_open)
     }
     
     public func start()
     {
         if(self.status == .CLOSE)
         {
-            self.status = .OPEN
+            self.status = .OPEN_MANUAL
             self.frame.origin.x = self.frame.origin.x + FlowCurveOptions.waveMargin
         }
     }
     
     public func close()
     {
+        self.layer.removeAllAnimations()
         self.status = .CLOSE
         self.reset()
-        self.layer.removeAllAnimations()
     }
     
     // MARK: -
     // MARK: caanimation delegate
+    
     public override func animationDidStop(anim: CAAnimation, finished flag: Bool)
     {
-        if(anim ==  self.layer.animationForKey("openfrist"))
-        {
-            self.status = .OPEN_ANI
-        }else if(anim == self.layer.animationForKey("open"))
-        {
-            bounce()
-        }else if(anim == self.layer.animationForKey("bounce"))
+        if(anim == self.layer.animationForKey(ANIMATION_KEY_BOUNCE))
         {
             finish()
         }
     }
+    
+    public override func animationDidStart(anim: CAAnimation) {
+
+        if(anim == self.layer.animationForKey(ANIMATION_KEY_OPEN2HALF))
+        {
+            self.status = .OPEN_ANI_TO_HALF
+        }else if(anim == self.layer.animationForKey(ANIMATION_KEY_BOUNCE))
+        {
+            self.status = .OPEN_BOUNCE
+        }else if(anim == self.layer.animationForKey(ANIMATION_KEY_OPEN2BOUNCE))
+        {
+            self.status = .OPEN_ANI_TO_BOUNCE
+        }
+    }
+    
 }

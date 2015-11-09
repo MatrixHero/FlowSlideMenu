@@ -106,7 +106,6 @@
 			children = (
 				6A8662FE1BEB59C500EC7AFB /* FlowSlideMenuCore */,
 				6ADAE7E11BE8F6C200641C89 /* FlowSlideMenu */,
-				6ADAE7F61BE8F6C300641C89 /* FlowSlideMenuTests */,
 				6ADAE8011BE8F6C300641C89 /* FlowSlideMenuUITests */,
 				6ADAE7E01BE8F6C200641C89 /* Products */,
 			);
@@ -142,12 +141,14 @@
 				6ADAE7F71BE8F6C300641C89 /* FlowSlideMenuTests.swift */,
 				6ADAE7F91BE8F6C300641C89 /* Info.plist */,
 			);
-			path = FlowSlideMenuTests;
+			name = FlowSlideMenuTests;
+			path = ../FlowSlideMenuTests;
 			sourceTree = "<group>";
 		};
 		6ADAE8011BE8F6C300641C89 /* FlowSlideMenuUITests */ = {
 			isa = PBXGroup;
 			children = (
+				6ADAE7F61BE8F6C300641C89 /* FlowSlideMenuTests */,
 				6ADAE8021BE8F6C300641C89 /* FlowSlideMenuUITests.swift */,
 				6ADAE8041BE8F6C300641C89 /* Info.plist */,
 			);
