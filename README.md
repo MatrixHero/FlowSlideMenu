@@ -11,7 +11,7 @@
 
 ![Showcase](effect.gif)
 ####Hits
-`0.1.6` is more smoothly for touch
+`0.1.7` is more smoothly for touch
 
 ####CocoaPods
 ```
