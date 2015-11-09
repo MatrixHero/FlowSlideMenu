@@ -33,6 +33,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     public var leftPanGesture: UIPanGestureRecognizer?
     public var leftTapGetsture: UITapGestureRecognizer?
     
+    private var curContext = 0
     
     // MARK: -
     // MARK: lifecycle
@@ -50,6 +51,18 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
         self.leftViewController = leftViewController
         initView()
 
+        self.leftContainerView.addObserver(self, forKeyPath: "frame", options: .New, context: &curContext)
+    }
+    
+    override public func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+        if context == &curContext {
+            if let newValue : CGRect = change?[NSKeyValueChangeNewKey]?.CGRectValue{
+                
+                self.leftContainerView.updatePointKVO(self.leftContainerView.frame.size.width + newValue.origin.x, orientation: Orientation.Left)
+            }
+        } else {
+            super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
+        }
     }
     
     public override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
@@ -77,7 +90,9 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
         
     }
     
-    deinit { }
+    deinit {
+        self.leftContainerView.removeObserver(self, forKeyPath: "frame", context: &curContext)
+    }
     
     // MARK: -
     // MARK: private funs
@@ -93,13 +108,13 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
         opacityframe.origin.y = opacityframe.origin.y + opacityOffset
         opacityframe.size.height = opacityframe.size.height - opacityOffset
         opacityView = UIView(frame: opacityframe)
-        opacityView.backgroundColor = FlowDrawerOptions.opacityViewBackgroundColor
+        opacityView.backgroundColor = FlowSlideMenuOptions.opacityViewBackgroundColor
         opacityView.autoresizingMask = [UIViewAutoresizing.FlexibleHeight, UIViewAutoresizing.FlexibleWidth]
         opacityView.layer.opacity = 0.0
         view.insertSubview(opacityView, atIndex: 1)
         
         var leftFrame: CGRect = view.bounds
-        leftFrame.size.width = FlowDrawerOptions.leftViewWidth + FlowCurveOptions.waveMargin
+        leftFrame.size.width = FlowSlideMenuOptions.leftViewWidth + FlowCurveOptions.waveMargin
         leftFrame.origin.x = leftMinOrigin();
         let leftOffset: CGFloat = 0
         leftFrame.origin.y = leftFrame.origin.y + leftOffset
@@ -147,17 +162,17 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     }
     
     private func leftMinOrigin() -> CGFloat {
-        return  -FlowDrawerOptions.leftViewWidth-FlowCurveOptions.waveMargin
+        return  -FlowSlideMenuOptions.leftViewWidth-FlowCurveOptions.waveMargin
     }
     
     private func slideViewWidth() -> CGFloat {
-        return  FlowDrawerOptions.leftViewWidth
+        return  FlowSlideMenuOptions.leftViewWidth
     }
     
     private func isLeftPointContainedWithinBezelRect(point: CGPoint) -> Bool{
         var leftBezelRect: CGRect = CGRectZero
         var tempRect: CGRect = CGRectZero
-        let bezelWidth: CGFloat = FlowDrawerOptions.leftBezelWidth
+        let bezelWidth: CGFloat = FlowSlideMenuOptions.leftBezelWidth
         
         CGRectDivide(view.bounds, &leftBezelRect, &tempRect, bezelWidth, CGRectEdge.MinXEdge)
         return CGRectContainsPoint(leftBezelRect, point)
@@ -177,7 +192,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     private func panLeftResultInfoForVelocity(velocity: CGPoint) -> PanInfo {
         
         let thresholdVelocity: CGFloat = 1000.0
-        let pointOfNoReturn: CGFloat = CGFloat(floor(leftMinOrigin())) + FlowDrawerOptions.pointOfNoReturnWidth
+        let pointOfNoReturn: CGFloat = CGFloat(floor(leftMinOrigin())) + FlowSlideMenuOptions.pointOfNoReturnWidth
         let leftOrigin: CGFloat = leftContainerView.frame.origin.x
         
         var panInfo: PanInfo = PanInfo(action: .Close, shouldBounce: false, velocity: 0.0)
@@ -202,7 +217,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     }
     
     private func slideLeftForGestureRecognizer( gesture: UIGestureRecognizer, point:CGPoint) -> Bool{
-        return isLeftOpen() || FlowDrawerOptions.panFromBezel && isLeftPointContainedWithinBezelRect(point)
+        return isLeftOpen() || FlowSlideMenuOptions.panFromBezel && isLeftPointContainedWithinBezelRect(point)
     }
     
     private func isPointContainedWithinLeftRect(point: CGPoint) -> Bool {
@@ -229,7 +244,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     }
     
     private func setOpenWindowLevel() {
-        if (FlowDrawerOptions.hideStatusBar) {
+        if (FlowSlideMenuOptions.hideStatusBar) {
             dispatch_async(dispatch_get_main_queue(), {
                 if let window = UIApplication.sharedApplication().keyWindow {
                     window.windowLevel = UIWindowLevelStatusBar + 1
@@ -239,7 +254,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     }
     
     private func setCloseWindowLebel() {
-        if (FlowDrawerOptions.hideStatusBar) {
+        if (FlowSlideMenuOptions.hideStatusBar) {
             dispatch_async(dispatch_get_main_queue(), {
                 if let window = UIApplication.sharedApplication().keyWindow {
                     window.windowLevel = UIWindowLevelNormal
@@ -258,15 +273,14 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
     
     public func closeLeftWithVelocity(velocity: CGFloat) {
         
-        self.leftContainerView.close()
-        
+        leftContainerView.close()
         let xOrigin: CGFloat = leftContainerView.frame.origin.x
         let finalXOrigin: CGFloat = leftMinOrigin()
         
         var frame: CGRect = leftContainerView.frame;
         frame.origin.x = finalXOrigin
         
-        var duration: NSTimeInterval = Double(FlowDrawerOptions.animationDuration)
+        var duration: NSTimeInterval = Double(FlowSlideMenuOptions.animationDuration)
         if velocity != 0.0 {
             duration = Double(fabs(xOrigin - finalXOrigin) / velocity)
             duration = Double(fmax(0.1, fmin(1.0, duration)))
@@ -294,9 +308,13 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
         openLeftWithVelocity(0.0)
     }
     
+    public func updatePointTimer()
+    {
+        print(self.leftContainerView.frame.origin.x)
+    }
+    
     public override func closeLeft (){
         leftViewController?.beginAppearanceTransition(isLeftHidden(), animated: true)
-        self.leftContainerView.close()
         closeLeftWithVelocity(0.0)
         setCloseWindowLebel()
     }
@@ -308,19 +326,17 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
         var frame = leftContainerView.frame;
         frame.origin.x = finalXOrigin;
         
-        var duration: NSTimeInterval = Double(FlowDrawerOptions.animationDuration)
+        var duration: NSTimeInterval = Double(FlowSlideMenuOptions.animationDuration)
         if velocity != 0.0 {
             duration = Double(fabs(xOrigin - finalXOrigin) / velocity)
             duration = Double(fmax(0.1, fmin(1.0, duration)))
         }
-        
-//        addShadowToView(leftContainerView)
-        
+    
         UIView.animateWithDuration(duration, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { [weak self]() -> Void in
             if let strongSelf = self {
                 strongSelf.leftContainerView.frame = frame
-                strongSelf.opacityView.layer.opacity = Float(FlowDrawerOptions.contentViewOpacity)
-                strongSelf.mainContainerView.transform = CGAffineTransformMakeScale(FlowDrawerOptions.contentViewScale, FlowDrawerOptions.contentViewScale)
+                strongSelf.opacityView.layer.opacity = Float(FlowSlideMenuOptions.contentViewOpacity)
+                strongSelf.mainContainerView.transform = CGAffineTransformMakeScale(FlowSlideMenuOptions.contentViewScale, FlowSlideMenuOptions.contentViewScale)
             }
             }) { [weak self](Bool) -> Void in
                 if let strongSelf = self {
@@ -329,7 +345,6 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
                 }
         }
         
-    
         self.leftContainerView.open()
     }
 
@@ -387,7 +402,7 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
             self.leftContainerView.start()
 
             LeftPanState.frameAtStartOfPan = leftContainerView.frame
-            LeftPanState.startPointOfPan = panGesture.locationInView(view)
+            LeftPanState.startPointOfPan = panGesture.locationInView(self.view)
             LeftPanState.wasOpenAtStartOfPan = isLeftOpen()
             LeftPanState.wasHiddenAtStartOfPan = isLeftHidden()
             
@@ -396,10 +411,10 @@ public class LLFlowSlideMenuVC : UIViewController, UIGestureRecognizerDelegate ,
             
         case UIGestureRecognizerState.Changed:
             
-            let translation: CGPoint = panGesture.translationInView(panGesture.view!)
+            let translation: CGPoint = panGesture.translationInView(panGesture.view)
+            leftContainerView.updatePoint(CGPointMake(translation.x, translation.y +  LeftPanState.startPointOfPan.y), orientation: Orientation.Left)
             leftContainerView.frame = applyLeftTranslation(translation, toFrame: LeftPanState.frameAtStartOfPan)
-            leftContainerView.backgroundColor = UIColor.clearColor()
-            leftContainerView.updatePoint(CGPointMake(translation.x -  LeftPanState.startPointOfPan.x, translation.y +  LeftPanState.startPointOfPan.y), orientation: Orientation.Left)
+           
             
         case UIGestureRecognizerState.Ended:
             

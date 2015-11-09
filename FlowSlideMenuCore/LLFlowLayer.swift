@@ -14,6 +14,10 @@ public class LLFlowLayer:CALayer
     @NSManaged var control : CGFloat
     @NSManaged var start : CGFloat
     
+    static public var KEY_REVEAL :String = "reveal"
+    static public var KEY_CONTROL :String = "control"
+    static public var KEY_START :String = "start"
+    
     override init() {
         super.init()
     }
