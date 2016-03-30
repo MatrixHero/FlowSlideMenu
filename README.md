@@ -48,4 +48,14 @@ func application(application: UIApplication, didFinishLaunchingWithOptions launc
 FlowSlideMenu is available under the MIT license. See the LICENSE file for more info.
 
 ## Requirement
-iOS7 
+
+iOS9
+
+## Future
+
+Support to iOS7
+
+## Hope
+
+Guys,U can give me a star or submiting a issue for me~ I'will fix it soonly.  
+
