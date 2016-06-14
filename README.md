@@ -51,9 +51,16 @@ FlowSlideMenu is available under the MIT license. See the LICENSE file for more 
 
 iOS9
 
-## Future
+## Todo
 
-Support to iOS7
+* Support to iOS7
+
+* Make code more better
+ 
+* Support to 4 orientation
+
+* Make doc 
+
 
 ## Hope
 

@@ -24,14 +24,23 @@ public struct FlowSlideMenuOptions {
 }
 
 public struct FlowCurveOptions {
+    //background color for animation view
     public static var bgColor : UIColor = UIColor.whiteColor()
+    //the wave cloud be floating so have to make margin
     public static var waveMargin : CGFloat = 100
+    //the auto open point which is start Y
     public static var startRevealY : CGFloat = 300
+    //animation duration total time
     public static var animation_reveal:Double = 0.3
+    //animation duration time for open
     public static var animation_open:Double = 0.1
+    //animation damping factor
     public static var animation_damping:CGFloat = 10
+    //animation stiffness factor
     public static var animation_stiffness:CGFloat = 100
+    //animation mass factor
     public static var animation_mass:CGFloat = 1
+    //animation initial velocity
     public static var animation_initialVelocity:CGFloat = 10
 }
 
